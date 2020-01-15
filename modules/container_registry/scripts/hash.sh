@@ -19,9 +19,13 @@ pushd "$ROOT_DIR"
 
 # Hash all source files of the Docker image
 if [ -f "$IGNORE" ]; then
-  # Exclude files listed in .dockerignore file
+    # We don't want to compute hashes for files listed in .dockerignore
+    # to match regex pattern we need to escape leading .
+    a=$(printf "! -regex ^./%s.* " `< .dockerignore`)
+    b=${a//\/.//\\\.}
+
     file_hashes="$(
-       find . -type f "$(printf "! -path %s " "$(cat "${IGNORE}")")" -exec md5sum {} \;
+       find . -type f "${b}" -exec md5sum {} \;
   )"
 else
   # Exclude Python cache files, dot files
