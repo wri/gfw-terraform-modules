@@ -11,6 +11,14 @@
 
 set -e
 
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
+}
+
 ROOT_DIR=${1:-.}
 DOCKER_PATH=${2:-.}
 IGNORE="${DOCKER_PATH}/.dockerignore"
