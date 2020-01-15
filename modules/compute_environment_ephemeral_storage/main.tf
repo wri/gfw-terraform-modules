@@ -5,7 +5,7 @@ terraform {
 locals {
   tags = merge(
       {
-        Name = "${var.project}-ephemeral-storage-batch-job${suffix}",
+        Name = "${var.project}-ephemeral-storage-batch-job${var.suffix}",
         Job  = "Batch Job"
       },
 
@@ -14,7 +14,7 @@ locals {
 
 resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
 
-  name = "${var.project}-ECS-optimized-ephemeral-storage-mounted${suffix}"
+  name = "${var.project}-ECS-optimized-ephemeral-storage-mounted${var.suffix}"
 
   disable_api_termination = false
   image_id                = data.aws_ami.latest-amazon-ecs-optimized.image_id
@@ -49,7 +49,7 @@ resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
 
 
 resource "aws_batch_compute_environment" "ephemeral-storage" {
-  compute_environment_name = "${var.project}-ephemeral-storage${suffix}"
+  compute_environment_name = "${var.project}-ephemeral-storage${var.suffix}"
 
   compute_resources {
 
