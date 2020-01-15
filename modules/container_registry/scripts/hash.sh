@@ -25,7 +25,7 @@ if [ -f "$IGNORE" ]; then
     b=${a//\/.//\\\.}
 
     file_hashes="$(
-       find . -type f "${b}" -exec md5sum {} \;
+       find . -type f $b -exec md5sum {} \;
   )"
 else
   # Exclude Python cache files, dot files
