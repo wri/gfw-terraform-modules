@@ -26,3 +26,10 @@ variable "suffix" {
   type = string
   default = ""
 }
+
+variable "instance_types" {
+  type = list(string)
+  default = [
+      "r5d", "c5d"
+    ]
+}
