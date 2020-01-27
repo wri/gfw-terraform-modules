@@ -24,6 +24,9 @@ rsync -avPHSX /tmp/ /mnt/ext/tmp/
 sed -i '$ a /mnt/ext/tmp  /tmp  none bind 0 0' /etc/fstab
 mount -a
 
+# Create 0 byte file "READY" to allow processes to check if new volume is ready for use
+touch /mnt/ext/tmp/READY
+
 # make /tmp usable by everyone
 chmod 777 /mnt/ext/tmp
 
