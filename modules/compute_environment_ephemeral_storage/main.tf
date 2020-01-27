@@ -1,5 +1,8 @@
 terraform {
   required_version = ">=0.12.13"
+  required_providers {
+    aws = ">= 2.45.0"
+  }
 }
 
 locals {
@@ -49,7 +52,8 @@ resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
 
 
 resource "aws_batch_compute_environment" "ephemeral-storage" {
-  compute_environment_name = "${var.project}-ephemeral-storage${var.suffix}"
+
+  compute_environment_name_prefix = "${var.project}-ephemeral-storage${var.suffix}"
 
   compute_resources {
 
@@ -81,6 +85,7 @@ resource "aws_batch_compute_environment" "ephemeral-storage" {
     ignore_changes = [
       compute_resources.0.desired_vcpus,
     ]
+    create_before_destroy = true
   }
 
   service_role = aws_iam_role.aws_batch_service_role.arn
