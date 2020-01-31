@@ -30,6 +30,6 @@ variable "suffix" {
 variable "instance_types" {
   type = list(string)
   default = [
-      "r5d", "c5d"
+      "r5d.4xlarge", "r5d.8xlarge", "r5d.12xlarge", "r5d.16xlarge", "r5d.24xlarge", "c5d.12xlarge", "c5d.18xlarge", "c5d.24xlarge"
     ]
 }

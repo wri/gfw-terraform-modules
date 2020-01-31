@@ -47,7 +47,7 @@ resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
     tags          = local.tags
   }
 
-  user_data = data.local_file.mount_nvme2n1_mime.content_base64
+  user_data = data.local_file.mount_tmp_enable_swap.content_base64
 }
 
 

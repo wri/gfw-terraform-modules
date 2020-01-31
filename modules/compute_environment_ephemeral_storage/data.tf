@@ -39,6 +39,6 @@ data "template_file" "spotfleet_trust_policy" {
   }
 }
 
-data "local_file" "mount_nvme2n1_mime" {
-  filename = "${path.module}/user_data/mount_nvme2n1_mime.sh"
+data "local_file" "mount_tmp_enable_swap" {
+  filename = "${path.module}/user_data/mount_tmp_enable_swap.sh"
 }
