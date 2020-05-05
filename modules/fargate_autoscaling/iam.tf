@@ -14,7 +14,7 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_role_policy" {
-  count      = var.task_role_policy_arn == null ? 0 : 1
+//  count      = var.task_role_policy_arn == null ? 0 : 1
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = var.task_role_policy_arn
 }

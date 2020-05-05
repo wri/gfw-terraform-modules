@@ -84,7 +84,6 @@ variable "security_group_ids" {
 
 variable "task_role_policy_arn" {
   type = string
-  default = null
 }
 
 variable "container_definition" {
