@@ -16,7 +16,7 @@ resource "aws_ecs_service" "default" {
 
 
   network_configuration {
-    security_groups = concate([aws_security_group.ecs_tasks.id], var.security_group_ids)
+    security_groups = concat([aws_security_group.ecs_tasks.id], var.security_group_ids)
     subnets         = var.private_subnet_ids
   }
 
