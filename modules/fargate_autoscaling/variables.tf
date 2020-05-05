@@ -1,11 +1,3 @@
-//variable "environment" {
-//  type        = string
-//  description = "An environment namespace for the infrastructure."
-//}
-//
-//variable "region" {
-//  type = string
-//}
 variable "project" {
   type = string
 }
@@ -42,10 +34,6 @@ variable "load_balancer_security_group" {
   description = "Optional secuirty group of load balancer with which the task can communicate. Required if load_blancer_arn is not empty"
 }
 
-
-//variable "repository_url" {
-//  type = string
-//}
 variable "container_name" {
   type        = string
   description = "The name of the container to associate with the load balancer."
@@ -66,14 +54,6 @@ variable "desired_count" {
   description = "Number of tasks"
 }
 
-//variable "deployment_min_percent" {
-//  type = number
-//}
-//
-//variable "deployment_max_percent" {
-//  type = number
-//}
-
 variable "fargate_cpu" {
   type = number
 }
@@ -81,10 +61,6 @@ variable "fargate_cpu" {
 variable "fargate_memory" {
   type = number
 }
-
-//variable "log_level" {
-//  type = string
-//}
 
 variable "auto_scaling_max_cpu_util" {
   type = number
@@ -109,17 +85,6 @@ variable "security_group_ids" {
 variable "task_role_policy_arn" {
   type = string
 }
-
-//variable "secrets_postgresql-reader_name" {
-//  type = string
-//}
-//
-//variable "log_retention" {
-//  type = number
-//  default = 30
-//  description = "Retention time of task logs in days"
-//}
-
 
 variable "container_definition" {
   type        = map(string)
