@@ -5,7 +5,7 @@ terraform {
 data "template_file" "ecr_lifecycle_policy" {
   template = file("${path.module}/policies/lifecycle.json")
   vars = {
-    tag         = var.tag
+    tag = var.tag
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_ecr_repository" "repo" {
 
 resource "aws_ecr_lifecycle_policy" "repo-policy" {
   repository = aws_ecr_repository.repo.name
-  policy = data.template_file.ecr_lifecycle_policy.rendered
+  policy     = data.template_file.ecr_lifecycle_policy.rendered
 }
 
 # Build and push the Docker image whenever the hash changes

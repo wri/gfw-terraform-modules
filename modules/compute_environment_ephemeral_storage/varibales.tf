@@ -23,13 +23,13 @@ variable "iam_policy_arn" {
 }
 
 variable "suffix" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "instance_types" {
   type = list(string)
   default = [
-      "r5d.4xlarge", "r5d.8xlarge", "r5d.12xlarge", "r5d.16xlarge", "r5d.24xlarge", "c5d.12xlarge", "c5d.18xlarge", "c5d.24xlarge"
-    ]
+    "r5d.4xlarge", "r5d.8xlarge", "r5d.12xlarge", "r5d.16xlarge", "r5d.24xlarge", "c5d.12xlarge", "c5d.18xlarge", "c5d.24xlarge"
+  ]
 }

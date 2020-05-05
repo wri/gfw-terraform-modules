@@ -7,12 +7,12 @@ terraform {
 
 locals {
   tags = merge(
-      {
-        Name = "${var.project}-ephemeral-storage-batch-job${var.suffix}",
-        Job  = "Batch Job"
-      },
+    {
+      Name = "${var.project}-ephemeral-storage-batch-job${var.suffix}",
+      Job  = "Batch Job"
+    },
 
-    var.tags)
+  var.tags)
 }
 
 resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {

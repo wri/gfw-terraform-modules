@@ -9,7 +9,7 @@ variable "root_dir" {
   default     = "."
 }
 
-variable "docker_path"{
+variable "docker_path" {
   description = "Path to Docker image source, relative to root dir"
   type        = string
   default     = "."
