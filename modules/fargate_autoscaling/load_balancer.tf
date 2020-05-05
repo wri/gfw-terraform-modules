@@ -44,7 +44,7 @@ resource "aws_lb_target_group" "default" {
 }
 
 resource "aws_lb_listener" "default" {
-  load_balancer_arn = aws_lb.default.count == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
   port              = var.listener_port
   protocol          = "HTTP"
   default_action {
