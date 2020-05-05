@@ -4,5 +4,5 @@ output "ecs_security_group_id" {
 }
 
 output "lb_dns_name" {
-  value = aws_lb.default.count == 1 ? aws_lb.default[0].dns_name : ""
+  value = length(aws_lb.default) == 1 ? aws_lb.default[0].dns_name : ""
 }
