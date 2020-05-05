@@ -87,6 +87,6 @@ variable "task_role_policy_arn" {
 }
 
 variable "container_definition" {
-  type        = map(string)
+  type        = string
   description = "JSON object defining the task container"
 }
