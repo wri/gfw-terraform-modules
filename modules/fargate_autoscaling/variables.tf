@@ -94,3 +94,8 @@ variable "container_definition" {
   type        = string
   description = "JSON object defining the task container"
 }
+
+variable "log_retention" {
+  type = number
+  default = 30
+}
