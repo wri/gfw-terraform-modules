@@ -8,15 +8,22 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+
+resource "aws_iam_role_policy_attachment" "custom_ecs_task_execution_role_policy" {
+//  count      = var.task_role_policy_arn == null ? 0 : 1
+  role = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = var.custom_task_execution_role_policy_arn
+}
+
 resource "aws_iam_role" "ecs_task_role" {
   name               = "${var.project}-ECS_TaskRole${var.name_suffix}"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_role_policy" {
+resource "aws_iam_role_policy_attachment" "custom_ecs_task_role_policy" {
 //  count      = var.task_role_policy_arn == null ? 0 : 1
   role       = aws_iam_role.ecs_task_role.name
-  policy_arn = var.task_role_policy_arn
+  policy_arn = var.custom_task_role_policy_arn
 }
 
 resource "aws_iam_role" "autoscaling" {

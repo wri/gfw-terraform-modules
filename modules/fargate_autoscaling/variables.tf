@@ -82,7 +82,11 @@ variable "security_group_ids" {
   type = list(string)
 }
 
-variable "task_role_policy_arn" {
+variable "custom_task_role_policy_arn" {
+  type = string
+}
+
+variable "custom_task_execution_role_policy_arn" {
   type = string
 }
 
