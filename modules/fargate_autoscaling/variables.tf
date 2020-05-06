@@ -82,12 +82,14 @@ variable "security_group_ids" {
   type = list(string)
 }
 
-variable "custom_task_role_policy_arn" {
-  type = string
+variable "task_role_policies" {
+  type = list(string)
+  default = []
 }
 
-variable "custom_task_execution_role_policy_arn" {
-  type = string
+variable "task_execution_role_policies" {
+  type = list(string)
+  default = []
 }
 
 variable "container_definition" {
