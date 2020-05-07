@@ -10,8 +10,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 
 
 resource "aws_iam_role_policy_attachment" "custom_ecs_task_execution_role_policies" {
-  count = length(var.task_execution_role_policies)
-  role = aws_iam_role.ecs_task_execution_role.name
+  count      = length(var.task_execution_role_policies)
+  role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = var.task_execution_role_policies[count.index]
 }
 
@@ -21,7 +21,7 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom_ecs_task_role_policies" {
-  count = length(var.task_role_policies)
+  count      = length(var.task_role_policies)
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = var.task_role_policies[count.index]
 }

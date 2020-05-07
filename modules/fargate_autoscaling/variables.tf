@@ -3,7 +3,7 @@ variable "project" {
 }
 
 variable "name_suffix" {
-  type = string
+  type    = string
   default = ""
 }
 
@@ -48,42 +48,42 @@ variable "container_port" {
 variable "listener_port" {
   type        = number
   description = "The port the Load Balancer listern should listen to"
-  default = 80
+  default     = 80
 }
 
 variable "desired_count" {
   type        = number
   description = "Number of tasks"
-  default = 1
+  default     = 1
 }
 
 variable "fargate_cpu" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "fargate_memory" {
-  type = number
+  type    = number
   default = 512
 }
 
 variable "auto_scaling_max_cpu_util" {
-  type = number
+  type    = number
   default = 75
 }
 
 variable "auto_scaling_max_capacity" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "auto_scaling_min_capacity" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "auto_scaling_cooldown" {
-  type = number
+  type    = number
   default = 300
 }
 
@@ -92,12 +92,12 @@ variable "security_group_ids" {
 }
 
 variable "task_role_policies" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "task_execution_role_policies" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
