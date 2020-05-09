@@ -19,7 +19,7 @@ resource "aws_lb" "default" {
 }
 
 resource "aws_lb_target_group" "default" {
-  name = substr("${var.project}-TargetGroup${var.name_suffix}", 0, 32)
+  name = substr("${var.project}-tg${var.name_suffix}", 0, 32)
   //
   //  health_check {
   //    protocol          = "TCP"
