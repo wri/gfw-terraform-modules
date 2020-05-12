@@ -17,8 +17,8 @@ resource "aws_iam_role_policy_attachment" "ecs_instance_role_ec2_contantainer_se
 
 resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
   role       = aws_iam_role.ecs_instance_role.name
-  count      = length(var.iam_policy_arn)
-  policy_arn = var.iam_policy_arn[count.index]
+  count      = length(var.ecs_role_policy_arns)
+  policy_arn = var.ecs_role_policy_arns[count.index]
 }
 
 

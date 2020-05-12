@@ -11,13 +11,13 @@ It will use the second available ephemeral storage device as SWAP drive.
 
 ```terraform
 module "compute_environment_ephemeral_storage" {
-  source             = "git::git@github.com:wri/gfw-terraform-modules.git//modules/compute_environment_ephemeral_storage?ref=v0.0.1"
-  project            = "my-project"
-  key_pair           = "my-key"
-  subnets            = aws_subnet.public.*.id
-  tags               = { Name = my-project }
-  security_group_ids = [aws_security_group.default.id]
-  iam_policy_arn     = [data.templatefile.ecs_policy.rendered]
+  source               = "git::git@github.com:wri/gfw-terraform-modules.git//modules/compute_environment_ephemeral_storage?ref=v0.0.1"
+  project              = "my-project"
+  key_pair             = "my-key"
+  subnets              = aws_subnet.public.*.id
+  tags                 = { Name = my-project }
+  security_group_ids   = [aws_security_group.default.id]
+  ecs_role_policy_arns = [data.templatefile.ecs_policy.rendered]
 }
 ```
 
@@ -30,7 +30,7 @@ module "compute_environment_ephemeral_storage" {
 | subnets                  | Subnets in which the compute environment can run                                                            | list(string) |         n/a         |   yes    |
 | tags                     | Tags used to tag resources                                                                                  | map(string)  |         n/a         |   yes    |
 | security_group_ids       | Security groups attached to EC2 instances                                                                   | list(string) |         n/a         |   yes    |
-| iam_policy_arn           | Policies attached to ECS instance role                                                                      | list(string) |         n/a         |   yes    |
+| ecs_role_policy_arns     | Policies attached to ECS instance role                                                                      | list(string) |         n/a         |   yes    |
 | suffix                   | Suffix which will be attached to resource names                                                             | string       |         `""`        |    no    |
 | use_ephemeral_storage    | Use Ephermeral Storage, if set, don't change ec2 instance types                                             | bool         |       `true`        |    no    |
 | ebs_volume_size          | Size of root device. Ignored if use_ephermeral_storage is true                                              | number       |         `8`         |    no    |
