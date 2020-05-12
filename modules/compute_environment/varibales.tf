@@ -33,3 +33,38 @@ variable "instance_types" {
     "r5d.4xlarge", "r5d.8xlarge", "r5d.12xlarge", "r5d.16xlarge", "r5d.24xlarge", "c5d.12xlarge", "c5d.18xlarge", "c5d.24xlarge"
   ]
 }
+
+variable "use_ephemeral_storage" {
+  type    = bool
+  default = true
+}
+
+variable "ebs_volume_size" {
+  type    = number
+  default = 8
+}
+
+variable "bid_percentage" {
+  type    = number
+  default = 100
+}
+
+variable "max_vcpus" {
+  type    = number
+  default = 256
+}
+
+variable "min_vcpus" {
+  type    = number
+  default = 0
+}
+
+variable "launch_type" {
+  type    = string
+  default = "SPOT"
+}
+
+variable "compute_environment_name" {
+  type    = string
+  default = "ephemeral_storage"
+}

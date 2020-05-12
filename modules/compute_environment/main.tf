@@ -8,16 +8,18 @@ terraform {
 locals {
   tags = merge(
     {
-      Name = "${var.project}-ephemeral-storage-batch-job${var.suffix}",
+      Name = "${var.project}-${var.compute_environment_name}-batch-job${var.suffix}",
       Job  = "Batch Job"
     },
-
   var.tags)
+
+  launch_template_name = var.use_ephemeral_storage == true ? "${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}" : var.use_ephemeral_storage == false ? "${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}" : ""
+
 }
 
-resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
+resource "aws_launch_template" "ecs-optimized" {
 
-  name = "${var.project}-ECS-optimized-ephemeral-storage-mounted${var.suffix}"
+  name = local.launch_template_name
 
   disable_api_termination = false
   image_id                = data.aws_ami.latest-amazon-ecs-optimized.image_id
@@ -33,7 +35,7 @@ resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
       delete_on_termination = "true"
       encrypted             = "false"
       snapshot_id           = data.aws_ami.latest-amazon-ecs-optimized.root_snapshot_id
-      volume_size           = 8
+      volume_size           = var.use_ephemeral_storage == true ? 8 : var.ebs_volume_size
     }
   }
 
@@ -47,17 +49,17 @@ resource "aws_launch_template" "ecs-optimized-ephemeral-storage-mounted" {
     tags          = local.tags
   }
 
-  user_data = data.local_file.mount_tmp_enable_swap.content_base64
+  user_data = var.use_ephemeral_storage == true ? data.local_file.mount_tmp_enable_swap.content_base64 : ""
 }
 
 
-resource "aws_batch_compute_environment" "ephemeral-storage" {
+resource "aws_batch_compute_environment" "default" {
 
-  compute_environment_name_prefix = "${var.project}-ephemeral-storage${var.suffix}"
+  compute_environment_name_prefix = "${var.project}-${var.compute_environment_name}${var.suffix}"
 
   compute_resources {
 
-    bid_percentage = 100
+    bid_percentage = var.bid_percentage
     ec2_key_pair   = var.key_pair
 
     instance_role       = aws_iam_instance_profile.ecs_instance_role.arn
@@ -65,19 +67,19 @@ resource "aws_batch_compute_environment" "ephemeral-storage" {
 
     instance_type = var.instance_types
 
-    max_vcpus = 256
-    min_vcpus = 0
+    max_vcpus = var.max_vcpus
+    min_vcpus = var.min_vcpus
 
     security_group_ids = var.security_group_ids
 
     subnets = var.subnets
 
     launch_template {
-      launch_template_id = aws_launch_template.ecs-optimized-ephemeral-storage-mounted.id
-      version            = aws_launch_template.ecs-optimized-ephemeral-storage-mounted.latest_version
+      launch_template_id = aws_launch_template.ecs-optimized.id
+      version            = aws_launch_template.ecs-optimized.latest_version
     }
 
-    type = "SPOT"
+    type = var.launch_type
     tags = local.tags
   }
 
@@ -92,6 +94,5 @@ resource "aws_batch_compute_environment" "ephemeral-storage" {
   type         = "MANAGED"
   state        = "ENABLED"
   depends_on   = [aws_iam_role_policy_attachment.aws_batch_service_role]
-
 
 }
