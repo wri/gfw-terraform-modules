@@ -1,12 +1,12 @@
 # ECS Instance Role
 
 resource "aws_iam_role" "ecs_instance_role" {
-  name               = substr("${var.project}-ecs_instance_role${var.suffix}", 0, 64)
+  name               = substr("${var.project}-${var.compute_environment_name}-ecs_instance_role${var.suffix}", 0, 64)
   assume_role_policy = data.template_file.ec2_trust_policy.rendered
 }
 
 resource "aws_iam_instance_profile" "ecs_instance_role" {
-  name = substr("${var.project}-ecs_instance_role${var.suffix}", 0, 64)
+  name = substr("${var.project}-${var.compute_environment_name}-ecs_instance_role${var.suffix}", 0, 64)
   role = aws_iam_role.ecs_instance_role.name
 }
 
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
 # ECS Spot fleet role
 
 resource "aws_iam_role" "ec2_spot_fleet_role" {
-  name               = substr("${var.project}-ec2_spot_fleet_role${var.suffix}", 0, 64)
+  name               = substr("${var.project}-${var.compute_environment_name}-ec2_spot_fleet_role${var.suffix}", 0, 64)
   assume_role_policy = data.template_file.spotfleet_trust_policy.rendered
 }
 
@@ -37,7 +37,7 @@ resource "aws_iam_role_policy_attachment" "ec2_spotfleet_tagging" {
 # ECS Batch service role
 
 resource "aws_iam_role" "aws_batch_service_role" {
-  name               = substr("${var.project}-aws_batch_service_role${var.suffix}", 0, 64)
+  name               = substr("${var.project}-${var.compute_environment_name}-aws_batch_service_role${var.suffix}", 0, 64)
   assume_role_policy = data.template_file.batch_trust_policy.rendered
 }
 
