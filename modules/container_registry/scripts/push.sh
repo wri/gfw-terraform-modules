@@ -15,7 +15,8 @@ set -e
 ROOT_DIR=${1:-.}
 REPOSITORY_URL=$2
 TAG=${3:-latest}
-DOCKER_FILE="${4:-.}/Dockerfile"
+DOCKER_PATH="${4:-.}"
+DOCKER_FILE="$DOCKER_PATH/${5:-Dockerfile}"
 
 REGION="$(echo "$REPOSITORY_URL" | cut -d. -f4)"
 IMAGE_NAME="$(echo "$REPOSITORY_URL" | cut -d/ -f2)"

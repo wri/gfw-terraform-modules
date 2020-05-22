@@ -31,7 +31,7 @@ resource "null_resource" "push" {
   }
 
   provisioner "local-exec" {
-    command     = "${coalesce(var.push_script, "${path.module}/scripts/push.sh")} ${var.root_dir} ${aws_ecr_repository.repo.repository_url} ${var.tag} ${var.docker_path}"
+    command     = "${coalesce(var.push_script, "${path.module}/scripts/push.sh")} ${var.root_dir} ${aws_ecr_repository.repo.repository_url} ${var.tag} ${var.docker_path} ${var.docker_filename}"
     interpreter = ["bash", "-c"]
   }
 }

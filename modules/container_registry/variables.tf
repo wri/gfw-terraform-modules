@@ -15,6 +15,11 @@ variable "docker_path" {
   default     = "."
 }
 
+variable "docker_filename" {
+  description = "Name of docker file"
+  type        = string
+  default     = "Dockerfile"
+}
 variable "tag" {
   description = "Tag to use for deployed Docker image"
   type        = string
