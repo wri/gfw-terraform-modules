@@ -20,23 +20,25 @@ you can specify the path to Dockerfile (`docker_path`) relative to `root_dir`.
 
 ```terraform
 module "container_registry" {
-  source      = "git::git@github.com:wri/gfw-terraform-modules.git//modules/container_registry?ref=v0.0.1"
-  image_name  = "my-project"
-  root_dir    = "../${path.root}"
-  docker_path = "docker/my-project"
+  source          = "git::git@github.com:wri/gfw-terraform-modules.git//modules/container_registry?ref=v0.1.3"
+  image_name      = "my-project"
+  root_dir        = "${path.root}/../"
+  docker_path     = "docker/my-project"
+  docker_filename = "project.dockerfile"
 }
 ```
 
 ## Inputs
 
-| Name        | Description                                        |  Type  |  Default   | Required |
-| ----------- | -------------------------------------------------- | :----: | :--------: | :------: |
-| image_name  | Name of Docker image                               | string |    n/a     |   yes    |
-| root_dir    | Path to folder used as root dir in Dockerfile      | string |    n/a     |   yes    |
-| docker_path | Path to Dockerfile relative to root_dir            | string |     .      |    no    |
-| tag         | Tag to use for deployed Docker image               | string | `"latest"` |    no    |
-| hash_script | Path to script to generate hash of source contents | string |    `""`    |    no    |
-| push_script | Path to script to build and push Docker image      | string |    `""`    |    no    |
+| Name           | Description                                        |  Type  |  Default     | Required |
+| -------------- | -------------------------------------------------- | :----: | :----------: | :------: |
+| image_name     | Name of Docker image                               | string |     n/a      |   yes    |
+| root_dir       | Path to folder used as root dir in Dockerfile      | string |     n/a      |   yes    |
+| docker_path    | Path to Dockerfile folder relative to root_dir     | string |      .       |    no    |
+| docker_filename| Name of Dockerfile                                 | string | "Dockerfile" |    no    |
+| tag            | Tag to use for deployed Docker image               | string |  `"latest"`  |    no    |
+| hash_script    | Path to script to generate hash of source contents | string |     `""`     |    no    |
+| push_script    | Path to script to build and push Docker image      | string |     `""`     |    no    |
 
 
 ## Outputs
