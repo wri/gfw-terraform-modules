@@ -105,3 +105,8 @@ variable "container_definition" {
   type        = string
   description = "JSON object defining the task container"
 }
+
+variable "force_new_deployment" {
+  type    = bool
+  default = true
+}

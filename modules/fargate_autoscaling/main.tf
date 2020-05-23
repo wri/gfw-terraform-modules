@@ -5,12 +5,12 @@ resource "aws_ecs_cluster" "default" {
 }
 
 resource "aws_ecs_service" "default" {
-  name            = "${var.project}-ecs_service${var.name_suffix}"
-  cluster         = aws_ecs_cluster.default.id
-  task_definition = aws_ecs_task_definition.default.arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
-
+  name                               = "${var.project}-ecs_service${var.name_suffix}"
+  cluster                            = aws_ecs_cluster.default.id
+  task_definition                    = aws_ecs_task_definition.default.arn
+  desired_count                      = var.desired_count
+  launch_type                        = "FARGATE"
+  force_new_deployment               = var.force_new_deployment
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
 
