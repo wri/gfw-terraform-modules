@@ -4,7 +4,7 @@
 #
 resource "aws_lb" "default" {
   count                            = var.load_balancer_arn == "" ? 1 : 0
-  name                             = substr("${var.project}-elb${var.name_suffix}", 0, 32)
+  name                             = replace(substr("${var.project}-elb${var.name_suffix}", 0, 32), "_", "-")
   enable_cross_zone_load_balancing = true
 
   subnets         = var.public_subnet_ids
