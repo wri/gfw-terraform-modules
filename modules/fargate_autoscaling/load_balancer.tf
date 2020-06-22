@@ -55,6 +55,7 @@ resource "aws_lb_listener" "default" {
 
 
 resource "aws_lb_listener_certificate" "default" {
+  count = var.acm_certificate_arn == null ? 0 : 1
   listener_arn    = aws_lb_listener.default.arn
   certificate_arn = var.acm_certificate_arn
 }
