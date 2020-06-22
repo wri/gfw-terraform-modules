@@ -52,3 +52,9 @@ resource "aws_lb_listener" "default" {
     type             = "forward"
   }
 }
+
+
+resource "aws_lb_listener_certificate" "default" {
+  listener_arn    = aws_lb_listener.default.arn
+  certificate_arn = var.acm_certificate_arn
+}

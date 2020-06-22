@@ -110,3 +110,8 @@ variable "force_new_deployment" {
   type    = bool
   default = true
 }
+
+variable "acm_certificate_arn" {
+  type    = string
+  default = null
+}
