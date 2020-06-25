@@ -38,7 +38,9 @@ resource "aws_ecs_service" "default" {
   //  }
 
   depends_on = [
-    aws_lb_listener.default,
+    aws_lb_listener.http,
+    aws_lb_listener.http_https,
+    aws_lb_listener.https
   ]
 }
 

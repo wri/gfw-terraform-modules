@@ -81,7 +81,7 @@ resource "aws_lb_listener" "http_https" {
 
 # If SSL certificate present, use this resource as listener
 # listener port will be ignored
-resource "aws_alb_listener" "https" {
+resource "aws_lb_listener" "https" {
   count             = var.acm_certificate_arn == null ? 0 : 1
   load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
   port              = 433
