@@ -84,7 +84,7 @@ resource "aws_lb_listener" "http_https" {
 resource "aws_lb_listener" "https" {
   count             = var.acm_certificate_arn == null ? 0 : 1
   load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
-  port              = 433
+  port              = 443
   protocol          = "HTTPS"
   certificate_arn   = var.acm_certificate_arn
   default_action {
