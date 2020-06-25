@@ -47,7 +47,7 @@ variable "container_port" {
 
 variable "listener_port" {
   type        = number
-  description = "The port the Load Balancer listern should listen to"
+  description = "The default port the Load Balancer listern should listen to. Will be ignored when acm_certificate is set."
   default     = 80
 }
 
@@ -112,6 +112,7 @@ variable "force_new_deployment" {
 }
 
 variable "acm_certificate_arn" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
+  description = "The ACM/ SSL certificate to use. When set, listener port will be set to 443. Request to port 80 will be forwarded. All other ports will be closed."
 }

@@ -1,0 +1,94 @@
+
+#
+# NLB Resources
+#
+resource "aws_lb" "default" {
+  count                            = var.load_balancer_arn == "" ? 1 : 0
+  name                             = trimsuffix(replace(substr("${var.project}-elb${var.name_suffix}", 0, 32), "_", "-"), "-")
+  enable_cross_zone_load_balancing = true
+
+  subnets         = var.public_subnet_ids
+  security_groups = [aws_security_group.lb[0].id]
+
+  tags = merge(
+    {
+      Job = var.project,
+    },
+    var.tags
+  )
+}
+
+resource "aws_lb_target_group" "default" {
+  name = replace(substr("${var.project}-tg${var.name_suffix}", 0, 32), "_", "-")
+  //
+  //  health_check {
+  //    protocol          = "TCP"
+  //    interval          = "30"
+  //    healthy_threshold = "3"
+  //    # For Network Load Balancers, this value must be the same as the healthy_threshold.
+  //    unhealthy_threshold = "3"
+  //  }
+
+  port     = var.container_port
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  target_type = "ip"
+
+  tags = merge(
+    {
+      Job = var.project,
+    },
+    var.tags
+  )
+}
+
+
+# use this resource as listener if no SSL certificate was provided (HTTP only)
+# will listen on speficied listener port (default 80)
+resource "aws_lb_listener" "http" {
+  count             = var.acm_certificate_arn == null ? 1 : 0
+  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  port              = var.listener_port
+  protocol          = "HTTP"
+  default_action {
+    target_group_arn = aws_lb_target_group.default.id
+    type             = "forward"
+  }
+}
+
+
+# If SSL certificate available forward HTTP requests to HTTPS
+# Listener port will be ignored
+resource "aws_lb_listener" "http_https" {
+  count             = var.acm_certificate_arn == null ? 0 : 1
+  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+
+
+# If SSL certificate present, use this resource as listener
+# listener port will be ignored
+resource "aws_alb_listener" "https" {
+  count             = var.acm_certificate_arn == null ? 0 : 1
+  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  port              = 433
+  protocol          = "HTTPS"
+  certificate_arn   = var.acm_certificate_arn
+  default_action {
+    target_group_arn = aws_lb_target_group.default.id
+    type             = "forward"
+  }
+}
