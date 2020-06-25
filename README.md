@@ -1,6 +1,12 @@
 # Reusable Terraform modules for GFW
 
-- AWS Batch Compute Environment (ephemeral storage)
-- AWS Container Registry
+This module contains reusable terraform modules for GFW.
+Currently, the following modules are available.
 
-More details in the corresponding module folders.
+- AWS Batch Compute Environment
+- AWS Container Registry
+- AWS Fargate with autoscaling
+
+When using modules, always refer to a version tag, never directly to master since breaking changes may occure.
+
+More details about usage in the corresponding module folders.
