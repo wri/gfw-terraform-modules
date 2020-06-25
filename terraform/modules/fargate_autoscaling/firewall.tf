@@ -6,6 +6,14 @@ resource "aws_security_group" "lb" {
   description = "Controls access to the ALB"
   vpc_id      = var.vpc_id
 
+  # When using SSL certificate open port 80 for ingress, otherwise user specific port
+  ingress {
+    protocol    = "tcp"
+    from_port   = var.acm_certificate_arn == null ? 80 : var.listener_port
+    to_port     = var.acm_certificate_arn == null ? 80 : var.listener_port
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = merge(
     {
       Name = "${var.project}-ecs-alb${var.name_suffix}"
@@ -14,18 +22,6 @@ resource "aws_security_group" "lb" {
   )
 }
 
-
-
-# When using SSL certificate open port 80 for ingress, otherwise user specific port
-resource "aws_security_group_rule" "lb_task_ingress_http" {
-  count             = var.load_balancer_arn == "" ? 1 : 0
-  security_group_id = aws_security_group.lb[0].id
-  from_port         = var.acm_certificate_arn == null ? 80 : var.listener_port
-  to_port           = var.acm_certificate_arn == null ? 80 : var.listener_port
-  protocol          = "tcp"
-  type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
-}
 
 # When using SSL certificate also open port 443 of ingress
 resource "aws_security_group_rule" "lb_task_ingress_https" {
