@@ -46,16 +46,10 @@ resource "aws_lb_target_group" "default" {
 resource "aws_lb_listener" "default" {
   load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
   port              = var.listener_port
-  protocol          = "HTTP"
+  protocol          = var.acm_certificate_arn == null ? "HTTP" : "HTTPS"
+  certificate_arn   = var.acm_certificate_arn
   default_action {
     target_group_arn = aws_lb_target_group.default.id
     type             = "forward"
   }
-}
-
-
-resource "aws_lb_listener_certificate" "default" {
-  count = var.acm_certificate_arn == null ? 0 : 1
-  listener_arn    = aws_lb_listener.default.arn
-  certificate_arn = var.acm_certificate_arn
 }
