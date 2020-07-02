@@ -25,7 +25,7 @@ resource "aws_security_group" "lb" {
 
 # When using SSL certificate also open port 443 of ingress
 resource "aws_security_group_rule" "lb_task_ingress_https" {
-  count             = var.load_balancer_arn == "" && var.acm_certificate_arn != null ? 1 : 0
+  count             = var.load_balancer_arn == "" ? 1 : 0
   security_group_id = aws_security_group.lb[0].id
   from_port         = 443
   to_port           = 443
