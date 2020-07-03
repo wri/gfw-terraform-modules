@@ -14,12 +14,6 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags = merge(
     {
@@ -29,17 +23,17 @@ resource "aws_security_group" "lb" {
   )
 }
 
-//
-//# When using SSL certificate also open port 443 of ingress
-//resource "aws_security_group_rule" "lb_task_ingress_https" {
-//  count             = var.load_balancer_arn == "" ? 1 : 0
-//  security_group_id = aws_security_group.lb[0].id
-//  from_port         = 443
-//  to_port           = 443
-//  protocol          = "tcp"
-//  type              = "ingress"
-//  cidr_blocks       = ["0.0.0.0/0"]
-//}
+
+# When using SSL certificate also open port 443 of ingress
+resource "aws_security_group_rule" "lb_task_ingress_https" {
+  count             = var.load_balancer_arn == "" ? 1 : 0
+  security_group_id = aws_security_group.lb[0].id
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
 
 
 # Open container port for egress and link with ECS Task security group
