@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = substr("${var.project}-ECS_TaskExecutionRole${var.name_suffix}",0,64)
+  name               = substr("${var.project}-ECS_TaskExecutionRole${var.name_suffix}", 0, 64)
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
 }
 

@@ -54,7 +54,9 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 | Name | Description |
 |------|-------------|
 | ecs\_security\_group\_id | Security group ID of the ECS service security group. |
-| lb\_dns\_name | n/a |
+| ecs\_cluster\_name | Name of ECS cluster. |
+| ecs\_service\_name | Name of ECS service. |
+| lb\_dns\_name | DNS of application load balance |
 
 
 

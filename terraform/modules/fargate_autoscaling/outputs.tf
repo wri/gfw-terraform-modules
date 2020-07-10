@@ -4,5 +4,16 @@ output "ecs_security_group_id" {
 }
 
 output "lb_dns_name" {
-  value = length(aws_lb.default) == 1 ? aws_lb.default[0].dns_name : ""
+  value       = length(aws_lb.default) == 1 ? aws_lb.default[0].dns_name : ""
+  description = "DNS of application load balance"
+}
+
+output "ecs_cluster_name" {
+  value       = aws_ecs_cluster.default.name
+  description = "Name of ECS cluster"
+}
+
+output "ecs_service_name" {
+  value       = aws_ecs_service.default.name
+  description = "Name of ECS service"
 }
