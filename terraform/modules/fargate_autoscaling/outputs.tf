@@ -17,3 +17,8 @@ output "ecs_service_name" {
   value       = aws_ecs_service.default.name
   description = "Name of ECS service"
 }
+
+output "ecs_update_service_policy_arn" {
+  value       = aws_iam_policy.ecs_update_service_policy.arn
+  description = "ARN of IAM policy to allow updating ECS service"
+}

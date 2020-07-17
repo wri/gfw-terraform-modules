@@ -57,9 +57,7 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 | ecs\_cluster\_name | Name of ECS cluster. |
 | ecs\_service\_name | Name of ECS service. |
 | lb\_dns\_name | DNS of application load balance |
-
-
-
+| ecs\_update\_service\_policy\_arn | ARN of IAM policy to allow updating ECS service |
 
 ## Usage Example
 

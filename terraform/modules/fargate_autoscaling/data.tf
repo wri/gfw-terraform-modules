@@ -53,3 +53,9 @@ data "local_file" "appautoscaling_role_policy" {
   filename = "${path.module}/templates/appautoscaling_role_policy.json"
 }
 
+data "template_file" "ecs_update_service_policy" {
+  template = file("${path.module}/templates/iam_policy_update_ecs_service.json.tmpl")
+  vars = {
+    service_arn = aws_ecs_service.default.id
+  }
+}

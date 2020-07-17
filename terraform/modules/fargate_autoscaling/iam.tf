@@ -36,3 +36,8 @@ resource "aws_iam_role_policy" "autoscaling" {
   policy = data.local_file.appautoscaling_role_policy.content
   role   = aws_iam_role.autoscaling.id
 }
+
+resource "aws_iam_policy" "ecs_update_service_policy" {
+  name   = "${var.project}-ecs_update_service_policy${var.name_suffix}"
+  policy = data.template_file.ecs_update_service_policy.rendered
+}
