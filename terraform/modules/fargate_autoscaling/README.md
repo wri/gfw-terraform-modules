@@ -9,7 +9,7 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 
 | Name | Version |
 |------|---------|
-| terraform | >=0.12.13 |
+| terraform | >=0.13 |
 | aws | >= 2.63.0 |
 
 ## Providers
@@ -53,11 +53,12 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 
 | Name | Description |
 |------|-------------|
+| ecs\_cluster\_name | Name of ECS cluster |
 | ecs\_security\_group\_id | Security group ID of the ECS service security group. |
-| ecs\_cluster\_name | Name of ECS cluster. |
-| ecs\_service\_name | Name of ECS service. |
-| lb\_dns\_name | DNS of application load balance |
+| ecs\_service\_name | Name of ECS service |
 | ecs\_update\_service\_policy\_arn | ARN of IAM policy to allow updating ECS service |
+| lb\_dns\_name | DNS of application load balance |
+
 
 ## Usage Example
 

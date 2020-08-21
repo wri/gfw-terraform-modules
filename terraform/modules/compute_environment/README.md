@@ -10,14 +10,14 @@ It will use the second available ephemeral storage device as SWAP drive.
 
 | Name | Version |
 |------|---------|
-| terraform | >=0.12.13 |
-| aws | >= 2.45.0 |
+| terraform | >= 0.13 |
+| aws | >= 3.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.45.0 |
+| aws | >= 3.3.0 |
 | local | n/a |
 | template | n/a |
 
@@ -46,7 +46,6 @@ It will use the second available ephemeral storage device as SWAP drive.
 | Name | Description |
 |------|-------------|
 | arn | n/a |
-
 
 
 ## Usage
