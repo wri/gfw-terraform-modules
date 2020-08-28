@@ -15,15 +15,13 @@ you can specify the path to Dockerfile (`docker_path`) relative to `root_dir`.
 
 | Name | Version |
 |------|---------|
-| terraform | >=0.12.13 |
-| Docker | |
-| md5sum | |
+| terraform | >=0.12.13, < 0.14 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 2.45, < 4 |
 | external | n/a |
 | null | n/a |
 | template | n/a |
@@ -47,7 +45,6 @@ you can specify the path to Dockerfile (`docker_path`) relative to `root_dir`.
 | hash | Docker image source hash |
 | repository\_url | ECR repository URL of Docker image |
 | tag | Docker image tag |
-
 
 
 ## Usage

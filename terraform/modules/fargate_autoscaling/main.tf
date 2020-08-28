@@ -1,10 +1,4 @@
 ### ECS
-terraform {
-  required_version = ">=0.12.13"
-  required_providers {
-    aws = ">= 2.63.0"
-  }
-}
 
 resource "aws_ecs_cluster" "default" {
   name = "${var.project}-cluster${var.name_suffix}"
