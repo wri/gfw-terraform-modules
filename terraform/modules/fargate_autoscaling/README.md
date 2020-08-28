@@ -9,14 +9,13 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 
 | Name | Version |
 |------|---------|
-| terraform | >=0.13 |
-| aws | >= 2.63.0 |
+| terraform | >= 0.12.13, < 0.14 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.63.0 |
+| aws | >= 2.63, < 4 |
 | local | n/a |
 | template | n/a |
 

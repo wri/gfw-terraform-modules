@@ -15,13 +15,13 @@ you can specify the path to Dockerfile (`docker_path`) relative to `root_dir`.
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13 |
+| terraform | >=0.12.13, < 0.14 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 2.45, < 4 |
 | external | n/a |
 | null | n/a |
 | template | n/a |
