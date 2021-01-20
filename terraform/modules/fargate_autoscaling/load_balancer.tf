@@ -19,7 +19,7 @@ resource "aws_lb" "default" {
 }
 
 resource "aws_lb_target_group" "default" {
-  name = replace(substr("${var.project}-tg${var.name_suffix}", 0, 32), "_", "-")
+  name = trimsuffix(replace(substr("${var.project}-tg${var.name_suffix}", 0, 32), "_", "-"), "-")
   //
   //  health_check {
   //    protocol          = "TCP"
