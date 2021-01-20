@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">=0.12.13"
-}
-
 data "template_file" "ecr_lifecycle_policy" {
   template = file("${path.module}/policies/lifecycle.json")
   vars = {

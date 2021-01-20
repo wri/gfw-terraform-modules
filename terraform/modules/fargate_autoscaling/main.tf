@@ -1,17 +1,11 @@
 ### ECS
-terraform {
-  required_version = ">=0.12.13"
-  required_providers {
-    aws = ">= 2.63.0"
-  }
-}
 
 resource "aws_ecs_cluster" "default" {
-  name = "${var.project}-ecs_cluster${var.name_suffix}"
+  name = "${var.project}-cluster${var.name_suffix}"
 }
 
 resource "aws_ecs_service" "default" {
-  name                               = "${var.project}-ecs_service${var.name_suffix}"
+  name                               = "${var.project}-service${var.name_suffix}"
   cluster                            = aws_ecs_cluster.default.id
   task_definition                    = aws_ecs_task_definition.default.arn
   desired_count                      = var.desired_count

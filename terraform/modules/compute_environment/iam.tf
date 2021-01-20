@@ -45,3 +45,10 @@ resource "aws_iam_role_policy_attachment" "aws_batch_service_role" {
   role       = aws_iam_role.aws_batch_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
 }
+
+# also add ecs role policies to batch service role
+resource "aws_iam_role_policy_attachment" "aws_batch_service_role_extended" {
+  role       = aws_iam_role.aws_batch_service_role.name
+  count      = length(var.ecs_role_policy_arns)
+  policy_arn = var.ecs_role_policy_arns[count.index]
+}
