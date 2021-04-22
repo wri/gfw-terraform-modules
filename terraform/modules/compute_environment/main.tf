@@ -2,7 +2,6 @@ locals {
   tags = merge(
     {
       Name = "${var.project}-${var.compute_environment_name}-batch-job${var.suffix}",
-      Job  = "Batch Job"
     },
   var.tags)
 
