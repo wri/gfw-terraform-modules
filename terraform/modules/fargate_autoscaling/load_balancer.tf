@@ -10,12 +10,7 @@ resource "aws_lb" "default" {
   subnets         = var.public_subnet_ids
   security_groups = [aws_security_group.lb[0].id]
 
-  tags = merge(
-    {
-      Job = var.project,
-    },
-    var.tags
-  )
+  tags = var.tags
 }
 
 resource "aws_lb_target_group" "default" {
@@ -35,12 +30,7 @@ resource "aws_lb_target_group" "default" {
 
   target_type = "ip"
 
-  tags = merge(
-    {
-      Job = var.project,
-    },
-    var.tags
-  )
+  tags = var.tags
 }
 
 

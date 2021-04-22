@@ -2,6 +2,7 @@
 
 resource "aws_ecs_cluster" "default" {
   name = "${var.project}-cluster${var.name_suffix}"
+  tags = var.tags
 }
 
 resource "aws_ecs_service" "default" {
@@ -13,6 +14,7 @@ resource "aws_ecs_service" "default" {
   force_new_deployment               = var.force_new_deployment
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
+  tags                               = var.tags
 
 
   network_configuration {
@@ -48,6 +50,7 @@ resource "aws_ecs_task_definition" "default" {
   execution_role_arn    = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn         = aws_iam_role.ecs_task_role.arn
   container_definitions = var.container_definition
+  tags                  = var.tags
 }
 
 # Autoscaling
