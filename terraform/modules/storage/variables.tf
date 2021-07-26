@@ -16,6 +16,12 @@ variable "public" {
   default = false
 }
 
+
+variable "enforce_server_side_encryption" {
+  type = bool
+  defaule = false
+}
+
 variable "bucket_name" {
   type = string
 }
