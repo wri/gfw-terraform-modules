@@ -105,7 +105,7 @@ data "template_file" "write_access" {
   }
 }
 
-resource "aws_iam_policy" "s3_write_pipelines" {
+resource "aws_iam_policy" "s3_write_access" {
   count  = length(var.write_policy_prefix)
   name   = "${var.project}-s3_write_${var.bucket_name}_${count.index}"
   policy = data.template_file.write_access[count.index].rendered

@@ -3,5 +3,5 @@ output "bucket_id" {
 }
 
 output "write_policy_arns" {
-  value = aws_iam_policy.s3_write_pipelines[*].arn
+  value = aws_iam_policy.s3_write_access[*].arn
 }
