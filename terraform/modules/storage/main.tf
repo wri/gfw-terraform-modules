@@ -110,3 +110,16 @@ resource "aws_iam_policy" "s3_write_access" {
   name   = "${var.project}-s3_write_${var.bucket_name}_${count.index}"
   policy = data.template_file.write_access[count.index].rendered
 }
+
+
+data "template_file" "read_access" {
+  template = file("${path.module}/templates/iam_policy_s3_read.json.tpl")
+  vars = {
+    bucket_arn = aws_s3_bucket.default.arn
+  }
+}
+
+resource "aws_iam_policy" "s3_read_access" {
+  name   = "${var.project}-s3_read_${var.bucket_name}"
+  policy = data.template_file.read_access.rendered
+}
