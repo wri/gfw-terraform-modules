@@ -19,7 +19,7 @@ variable "public" {
 
 variable "enforce_server_side_encryption" {
   type = bool
-  defaule = false
+  default = false
 }
 
 variable "bucket_name" {
