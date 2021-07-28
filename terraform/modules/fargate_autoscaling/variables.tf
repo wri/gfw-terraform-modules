@@ -7,6 +7,16 @@ variable "name_suffix" {
   default = ""
 }
 
+variable "cluster_id" {
+  type = string
+  default = ""
+}
+
+variable "cluster_name" {
+  type = string
+  default = ""
+}
+
 variable "tags" {
   type = map(string)
 }

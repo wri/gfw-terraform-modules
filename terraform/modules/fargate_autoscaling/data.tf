@@ -23,23 +23,6 @@ data "aws_iam_policy_document" "ecs_assume_role" {
   }
 }
 
-//data "template_file" "container_definition" {
-//  template = file("${path.root}/templates/container_definition.json.tmpl")
-//  vars = {
-//    image = "${var.repository_url}:latest"
-//
-//    container_name = var.container_name
-//    container_port = var.container_port
-//
-//    log_group = aws_cloudwatch_log_group.default.name
-//
-//    secret_name = var.secrets_postgresql-reader_name
-//    log_level   = var.log_level
-//    project     = var.project
-//    environment = var.environment
-//    aws_region  = var.region
-//  }
-//}
 
 data "template_file" "autoscaling_role" {
   template = file("${path.module}/templates/service_role.json.tmpl")

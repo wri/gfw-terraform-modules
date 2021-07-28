@@ -15,30 +15,19 @@ resource "aws_lb" "default" {
 
 resource "aws_lb_target_group" "default" {
   name = trimsuffix(replace(substr("${var.project}-tg${var.name_suffix}", 0, 32), "_", "-"), "-")
-  //
-  //  health_check {
-  //    protocol          = "TCP"
-  //    interval          = "30"
-  //    healthy_threshold = "3"
-  //    # For Network Load Balancers, this value must be the same as the healthy_threshold.
-  //    unhealthy_threshold = "3"
-  //  }
-
   port     = var.container_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
-
   target_type = "ip"
-
   tags = var.tags
 }
 
 
 # use this resource as listener if no SSL certificate was provided (HTTP only)
-# will listen on speficied listener port (default 80)
+# will listen on specified listener port (default 80)
 resource "aws_lb_listener" "http" {
-  count             = var.acm_certificate_arn == null ? 1 : 0
-  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  count             = var.acm_certificate_arn == null && aws_lb.default.count > 0 ? 1 : 0
+  load_balancer_arn = aws_lb.default[0].arn
   port              = var.listener_port
   protocol          = "HTTP"
   default_action {
@@ -51,8 +40,8 @@ resource "aws_lb_listener" "http" {
 # If SSL certificate available forward HTTP requests to HTTPS
 # Listener port will be ignored
 resource "aws_lb_listener" "http_https" {
-  count             = var.acm_certificate_arn == null ? 0 : 1
-  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  count             = var.acm_certificate_arn == null || aws_lb.default.count == 0 ? 0 : 1
+  load_balancer_arn = aws_lb.default[0].arn
   port              = 80
   protocol          = "HTTP"
 
@@ -72,8 +61,8 @@ resource "aws_lb_listener" "http_https" {
 # If SSL certificate present, use this resource as listener
 # listener port will be ignored
 resource "aws_lb_listener" "https" {
-  count             = var.acm_certificate_arn == null ? 0 : 1
-  load_balancer_arn = length(aws_lb.default) == 1 ? aws_lb.default[0].arn : var.load_balancer_arn
+  count             = var.acm_certificate_arn == null || aws_lb.default.count ? 0 : 1
+  load_balancer_arn = aws_lb.default[0].arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = var.acm_certificate_arn

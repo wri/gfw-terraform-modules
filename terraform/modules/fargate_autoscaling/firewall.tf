@@ -1,7 +1,7 @@
 # ALB Security group
 # This is the group you need to edit if you want to restrict access to your application
 resource "aws_security_group" "lb" {
-  count       = var.load_balancer_arn == "" ? 1 : 0
+  count       = var.load_balancer_security_group == "" ? 1 : 0
   name        = "${var.project}-ecs-alb${var.name_suffix}"
   description = "Controls access to the ALB"
   vpc_id      = var.vpc_id
@@ -29,23 +29,10 @@ resource "aws_security_group" "lb" {
   )
 }
 
-//
-//# When using SSL certificate also open port 443 of ingress
-//resource "aws_security_group_rule" "lb_task_ingress_https" {
-//  count             = var.load_balancer_arn == "" ? 1 : 0
-//  security_group_id = aws_security_group.lb[0].id
-//  from_port         = 443
-//  to_port           = 443
-//  protocol          = "tcp"
-//  type              = "ingress"
-//  cidr_blocks       = ["0.0.0.0/0"]
-//}
-
 
 # Open container port for egress and link with ECS Task security group
 resource "aws_security_group_rule" "lb_task_egress" {
-  count                    = var.load_balancer_arn == "" ? 1 : 0
-  security_group_id        = aws_security_group.lb[0].id
+  security_group_id        = aws_security_group.lb.count == 1 ? aws_security_group.lb[0].id : var.load_balancer_security_group
   from_port                = var.container_port
   to_port                  = var.container_port
   protocol                 = "tcp"
@@ -65,7 +52,7 @@ resource "aws_security_group" "ecs_tasks" {
     protocol        = "tcp"
     from_port       = var.container_port
     to_port         = var.container_port
-    security_groups = var.load_balancer_arn == "" ? [aws_security_group.lb[0].id] : [var.load_balancer_security_group]
+    security_groups = aws_security_group.lb.count > 0 ? [aws_security_group.lb[0].id] : [var.load_balancer_security_group]
   }
 
   egress {

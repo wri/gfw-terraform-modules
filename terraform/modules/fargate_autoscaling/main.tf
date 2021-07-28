@@ -1,13 +1,14 @@
 ### ECS
 
 resource "aws_ecs_cluster" "default" {
+  count = var.cluster_id == "" ? 0 : 1
   name = "${var.project}-cluster${var.name_suffix}"
   tags = var.tags
 }
 
 resource "aws_ecs_service" "default" {
   name                               = "${var.project}-service${var.name_suffix}"
-  cluster                            = aws_ecs_cluster.default.id
+  cluster                            = aws_ecs_cluster.default.count > 0 ? aws_ecs_cluster.default[0].id : var.cluster_id
   task_definition                    = aws_ecs_task_definition.default.arn
   desired_count                      = var.desired_count
   launch_type                        = "FARGATE"
@@ -58,7 +59,7 @@ resource "aws_ecs_task_definition" "default" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = var.auto_scaling_max_capacity
   min_capacity       = var.auto_scaling_min_capacity
-  resource_id        = "service/${aws_ecs_cluster.default.name}/${aws_ecs_service.default.name}"
+  resource_id        = "service/${aws_ecs_cluster.default.count > 0 ? aws_ecs_cluster.default[0].name : var.cluster_name}/${aws_ecs_service.default.name}"
   role_arn           = aws_iam_role.autoscaling.arn
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
