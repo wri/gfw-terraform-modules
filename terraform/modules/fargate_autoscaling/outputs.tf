@@ -9,7 +9,7 @@ output "lb_dns_name" {
 }
 
 output "ecs_cluster_name" {
-  value       = aws_ecs_cluster.default.count > ? aws_ecs_cluster.default[0].name : var.cluster_name
+  value       = aws_ecs_cluster.default.count > 0 ? aws_ecs_cluster.default[0].name : var.cluster_name
   description = "Name of ECS cluster"
 }
 
