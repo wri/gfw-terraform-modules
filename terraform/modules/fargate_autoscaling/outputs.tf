@@ -8,6 +8,10 @@ output "lb_dns_name" {
   description = "DNS of application load balance"
 }
 
+output lb_target_group_arn {
+  value = aws_lb_target_group.default.arn
+}
+
 output "ecs_cluster_name" {
   value       = length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].name : var.cluster_name
   description = "Name of ECS cluster"
