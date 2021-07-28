@@ -26,7 +26,7 @@ resource "aws_lb_target_group" "default" {
 # use this resource as listener if no SSL certificate was provided (HTTP only)
 # will listen on specified listener port (default 80)
 resource "aws_lb_listener" "http" {
-  count             = var.acm_certificate_arn == null && aws_lb.default.count > 0 ? 1 : 0
+  count             = var.acm_certificate_arn == null && length(aws_lb.default) > 0 ? 1 : 0
   load_balancer_arn = aws_lb.default[0].arn
   port              = var.listener_port
   protocol          = "HTTP"
@@ -40,7 +40,7 @@ resource "aws_lb_listener" "http" {
 # If SSL certificate available forward HTTP requests to HTTPS
 # Listener port will be ignored
 resource "aws_lb_listener" "http_https" {
-  count             = var.acm_certificate_arn == null || aws_lb.default.count == 0 ? 0 : 1
+  count             = var.acm_certificate_arn == null || length(aws_lb.default) == 0 ? 0 : 1
   load_balancer_arn = aws_lb.default[0].arn
   port              = 80
   protocol          = "HTTP"
@@ -61,7 +61,7 @@ resource "aws_lb_listener" "http_https" {
 # If SSL certificate present, use this resource as listener
 # listener port will be ignored
 resource "aws_lb_listener" "https" {
-  count             = var.acm_certificate_arn == null || aws_lb.default.count ? 0 : 1
+  count             = var.acm_certificate_arn == null || length(aws_lb.default) ? 0 : 1
   load_balancer_arn = aws_lb.default[0].arn
   port              = 443
   protocol          = "HTTPS"

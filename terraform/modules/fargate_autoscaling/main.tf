@@ -8,7 +8,7 @@ resource "aws_ecs_cluster" "default" {
 
 resource "aws_ecs_service" "default" {
   name                               = "${var.project}-service${var.name_suffix}"
-  cluster                            = aws_ecs_cluster.default.count > 0 ? aws_ecs_cluster.default[0].id : var.cluster_id
+  cluster                            = length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].id : var.cluster_id
   task_definition                    = aws_ecs_task_definition.default.arn
   desired_count                      = var.desired_count
   launch_type                        = "FARGATE"

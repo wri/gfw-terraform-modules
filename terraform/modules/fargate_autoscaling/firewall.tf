@@ -32,7 +32,7 @@ resource "aws_security_group" "lb" {
 
 # Open container port for egress and link with ECS Task security group
 resource "aws_security_group_rule" "lb_task_egress" {
-  security_group_id        = aws_security_group.lb.count == 1 ? aws_security_group.lb[0].id : var.load_balancer_security_group
+  security_group_id        = length(aws_security_group.lb) == 1 ? aws_security_group.lb[0].id : var.load_balancer_security_group
   from_port                = var.container_port
   to_port                  = var.container_port
   protocol                 = "tcp"
@@ -52,7 +52,7 @@ resource "aws_security_group" "ecs_tasks" {
     protocol        = "tcp"
     from_port       = var.container_port
     to_port         = var.container_port
-    security_groups = aws_security_group.lb.count > 0 ? [aws_security_group.lb[0].id] : [var.load_balancer_security_group]
+    security_groups = length(aws_security_group.lb) > 0 ? [aws_security_group.lb[0].id] : [var.load_balancer_security_group]
   }
 
   egress {
