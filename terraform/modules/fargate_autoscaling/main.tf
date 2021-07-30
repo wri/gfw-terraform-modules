@@ -1,7 +1,7 @@
 ### ECS
 
 resource "aws_ecs_cluster" "default" {
-  count = var.cluster_id == "" ? 0 : 1
+  count = var.cluster_id == "" ? 1 : 0
   name = "${var.project}-cluster${var.name_suffix}"
   tags = var.tags
 }
