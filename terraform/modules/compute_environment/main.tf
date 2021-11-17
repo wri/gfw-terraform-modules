@@ -28,7 +28,7 @@ resource "aws_launch_template" "ecs-optimized" {
       delete_on_termination = "true"
       encrypted             = "false"
       snapshot_id           = data.aws_ami.latest-amazon-ecs-optimized.root_snapshot_id
-      volume_size           = var.use_ephemeral_storage == true ? 8 : var.ebs_volume_size
+      volume_size           = var.use_ephemeral_storage == true ? 30 : var.ebs_volume_size
     }
   }
 
