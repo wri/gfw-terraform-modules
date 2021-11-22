@@ -41,7 +41,7 @@ variable "use_ephemeral_storage" {
 
 variable "ebs_volume_size" {
   type    = number
-  default = 8
+  default = 30
 }
 
 variable "bid_percentage" {
