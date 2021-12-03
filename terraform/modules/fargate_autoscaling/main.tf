@@ -1,18 +1,21 @@
 ### ECS
 
 resource "aws_ecs_cluster" "default" {
+  count = var.cluster_id == "" ? 1 : 0
   name = "${var.project}-cluster${var.name_suffix}"
+  tags = var.tags
 }
 
 resource "aws_ecs_service" "default" {
   name                               = "${var.project}-service${var.name_suffix}"
-  cluster                            = aws_ecs_cluster.default.id
+  cluster                            = length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].id : var.cluster_id
   task_definition                    = aws_ecs_task_definition.default.arn
   desired_count                      = var.desired_count
   launch_type                        = "FARGATE"
   force_new_deployment               = var.force_new_deployment
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
+  tags                               = var.tags
 
 
   network_configuration {
@@ -48,6 +51,7 @@ resource "aws_ecs_task_definition" "default" {
   execution_role_arn    = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn         = aws_iam_role.ecs_task_role.arn
   container_definitions = var.container_definition
+  tags                  = var.tags
 }
 
 # Autoscaling
@@ -55,7 +59,7 @@ resource "aws_ecs_task_definition" "default" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = var.auto_scaling_max_capacity
   min_capacity       = var.auto_scaling_min_capacity
-  resource_id        = "service/${aws_ecs_cluster.default.name}/${aws_ecs_service.default.name}"
+  resource_id        = "service/${length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].name : var.cluster_name}/${aws_ecs_service.default.name}"
   role_arn           = aws_iam_role.autoscaling.arn
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
