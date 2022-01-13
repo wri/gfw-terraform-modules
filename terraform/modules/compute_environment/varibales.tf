@@ -49,6 +49,11 @@ variable "bid_percentage" {
   default = 100
 }
 
+variable "allocation_strategy" {
+  type    = string
+  default = "BEST_FIT"
+}
+
 variable "max_vcpus" {
   type    = number
   default = 256

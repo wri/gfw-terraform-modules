@@ -2,8 +2,8 @@
 
 Terraform module creates a AWS Batch compute Environment using SPOT-EC2 instances with optional ephemeral storage.
 
-If ephemeral storage is selected (default), Compute Environment will choose from R5d and C5d EC2 instance families 
-and mount one of the available ephemeral storage device (SSD drive) as `/tmp`. 
+If ephemeral storage is selected (default), Compute Environment will choose from R5d and C5d EC2 instance families
+and mount one of the available ephemeral storage device (SSD drive) as `/tmp`.
 It will use the second available ephemeral storage device as SWAP drive.
 
 ## Requirements
@@ -26,6 +26,7 @@ It will use the second available ephemeral storage device as SWAP drive.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | bid\_percentage | n/a | `number` | `100` | no |
+| allocation\_strategy | [The allocation strategy defines behavior when AWS Batch needs additional capacity](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) | `string` | `BEST_FIT` | no |
 | compute\_environment\_name | n/a | `string` | `"ephemeral_storage"` | no |
 | ebs\_volume\_size | n/a | `number` | `8` | no |
 | ecs\_role\_policy\_arns | n/a | `list(string)` | n/a | yes |
