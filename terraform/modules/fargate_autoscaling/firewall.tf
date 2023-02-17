@@ -2,7 +2,7 @@
 # This is the group you need to edit if you want to restrict access to your application
 resource "aws_security_group" "lb" {
   count       = var.load_balancer_security_group == "" ? 1 : 0
-  name        = "${var.project}-ecs-alb${var.name_suffix}"
+  name        = substr("${var.project}-ecs-alb${var.name_suffix}", 0, 64)
   description = "Controls access to the ALB"
   vpc_id      = var.vpc_id
 
@@ -23,7 +23,7 @@ resource "aws_security_group" "lb" {
 
   tags = merge(
     {
-      Name = "${var.project}-ecs-alb${var.name_suffix}"
+      Name = substr("${var.project}-ecs-alb${var.name_suffix}", 0, 64)
     },
     var.tags
   )
@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "lb_task_egress" {
 # Traffic to the ECS Cluster should only come from the ALB
 # Tasks should be able to communicate with any external resource
 resource "aws_security_group" "ecs_tasks" {
-  name        = "${var.project}-ecs-tasks${var.name_suffix}"
+  name        = substr("${var.project}-ecs-tasks${var.name_suffix}", 0, 64)
   description = "Allow inbound access from the ALB only"
   vpc_id      = var.vpc_id
 
@@ -64,7 +64,7 @@ resource "aws_security_group" "ecs_tasks" {
 
   tags = merge(
     {
-      Name = "${var.project}-ecs-tasks${var.name_suffix}"
+      Name = substr("${var.project}-ecs-tasks${var.name_suffix}", 0, 64)
     },
     var.tags
   )
