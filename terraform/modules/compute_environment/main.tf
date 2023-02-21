@@ -1,11 +1,12 @@
 locals {
   tags = merge(
     {
-      Name = "${var.project}-${var.compute_environment_name}-batch-job${var.suffix}",
+      Name = substr("${var.project}-${var.compute_environment_name}-batch-job${var.suffix}", 0, 64)
     },
-  var.tags)
+    var.tags
+  )
 
-  launch_template_name = var.use_ephemeral_storage == true ? "${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}" : var.use_ephemeral_storage == false ? "${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}" : ""
+  launch_template_name = var.use_ephemeral_storage == true ? substr("${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}", 0, 64) : var.use_ephemeral_storage == false ? substr("${var.project}-ECS-optimized-${var.compute_environment_name}${var.suffix}", 0, 64) : ""
 
 }
 
@@ -47,7 +48,7 @@ resource "aws_launch_template" "ecs-optimized" {
 
 resource "aws_batch_compute_environment" "default" {
 
-  compute_environment_name_prefix = "${var.project}-${var.compute_environment_name}${var.suffix}"
+  compute_environment_name_prefix = substr("${var.project}-${var.compute_environment_name}${var.suffix}", 0, 64)
 
   compute_resources {
 

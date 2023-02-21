@@ -2,12 +2,12 @@
 
 resource "aws_ecs_cluster" "default" {
   count = var.cluster_id == "" ? 1 : 0
-  name = "${var.project}-cluster${var.name_suffix}"
+  name = substr("${var.project}-cluster${var.name_suffix}", 0, 64)
   tags = var.tags
 }
 
 resource "aws_ecs_service" "default" {
-  name                               = "${var.project}-service${var.name_suffix}"
+  name                               = substr("${var.project}-service${var.name_suffix}", 0, 64)
   cluster                            = length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].id : var.cluster_id
   task_definition                    = aws_ecs_task_definition.default.arn
   desired_count                      = var.desired_count
@@ -29,7 +29,7 @@ resource "aws_ecs_service" "default" {
     container_port   = var.container_port
   }
 
-  # TODO: check if this is nessessary
+  # TODO: check if this is necessary
   //  lifecycle {
   //    ignore_changes = [desired_count]
   //  }
@@ -42,7 +42,7 @@ resource "aws_ecs_service" "default" {
 }
 
 resource "aws_ecs_task_definition" "default" {
-  family       = "${var.project}${var.name_suffix}"
+  family       = substr("${var.project}${var.name_suffix}", 0, 64)
   network_mode = "awsvpc"
   requires_compatibilities = [
   "FARGATE"]
@@ -69,7 +69,7 @@ resource "aws_appautoscaling_target" "ecs_target" {
 
 resource "aws_appautoscaling_policy" "default" {
 
-  name               = "${var.project}-autoscaling-policy${var.name_suffix}"
+  name               = substr("${var.project}-autoscaling-policy${var.name_suffix}", 0, 64)
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
