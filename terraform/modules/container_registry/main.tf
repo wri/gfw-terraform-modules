@@ -10,7 +10,6 @@ data "external" "hash" {
   program = [coalesce(var.hash_script, "${path.module}/scripts/hash.sh"), var.root_dir, var.docker_path]
 }
 
-
 resource "aws_ecr_repository" "repo" {
   name = lower(var.image_name)
 }
@@ -31,4 +30,3 @@ resource "null_resource" "push" {
     interpreter = ["bash", "-c"]
   }
 }
-
