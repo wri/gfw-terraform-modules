@@ -71,3 +71,19 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
   }
 }
+
+resource "aws_lb_listener_rule" "default" {
+  count = var.path_pattern == null ? 0 : 1
+  listener_arn = aws_lb_listener.http_https.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.default.arn
+  }
+
+  condition {
+    path_pattern {
+      values = [var.path_pattern]
+    }
+  }
+}
