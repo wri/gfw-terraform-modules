@@ -27,7 +27,7 @@ resource "aws_lb_target_group" "default" {
 # will listen on specified listener port (default 80)
 resource "aws_lb_listener" "http" {
   count             = var.acm_certificate_arn == null && length(aws_lb.default) > 0 ? 1 : 0
-  load_balancer_arn = var.load_balancer_arn == "" ? aws_lb.default[0].arn : var.load_balancer_arn
+  load_balancer_arn = coalesce(aws_lb.default[0].arn, var.load_balancer_arn)
   port              = var.listener_port
   protocol          = "HTTP"
   default_action {
