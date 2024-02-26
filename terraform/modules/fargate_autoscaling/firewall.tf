@@ -69,3 +69,13 @@ resource "aws_security_group" "ecs_tasks" {
     var.tags
   )
 }
+
+resource "aws_security_group_rule" "lb" {
+  count             = var.load_balancer_security_group == "" ? 0 : 1
+  type              = "ingress"
+  from_port         = var.listener_port
+  to_port           = var.listener_port
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.load_balancer_security_group
+}
