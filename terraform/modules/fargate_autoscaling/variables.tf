@@ -57,7 +57,7 @@ variable "container_port" {
 
 variable "listener_port" {
   type        = number
-  description = "The default port the Load Balancer listern should listen to. Will be ignored when acm_certificate is set."
+  description = "The default port the Load Balancer should listen to. Will be ignored when acm_certificate is set."
   default     = 80
 }
 
