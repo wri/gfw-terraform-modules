@@ -126,8 +126,3 @@ variable "acm_certificate_arn" {
   default     = null
   description = "The ACM/ SSL certificate to use. When set, listener port will be set to 443. Request to port 80 will be forwarded. All other ports will be closed."
 }
-
-# variable "path_pattern" {
-#   type = string
-#   description = "Paths matching this pattern are forwarded to the ecs service created"
-# }
