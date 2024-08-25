@@ -79,3 +79,42 @@ resource "aws_security_group_rule" "lb" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = var.load_balancer_security_group
 }
+
+# Allow Batch tasks to reach the API
+resource "aws_security_group" "batch_instances" {
+  name        = substr("${var.project}-batch-instances${var.name_suffix}", 0, 64)
+  description = "Security group for AWS Batch instances"
+  vpc_id      = var.vpc_id
+
+  egress {
+    protocol    = "tcp"
+    from_port   = var.container_port
+    to_port     = var.container_port
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    {
+      Name = substr("${var.project}-batch-instances${var.name_suffix}", 0, 64)
+    },
+    var.tags
+  )
+}
+
+resource "aws_security_group_rule" "ecs_tasks_ingress_from_batch" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.ecs_tasks.id
+  from_port                = var.container_port
+  to_port                  = var.container_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.batch_instances.id
+}
+
+resource "aws_security_group_rule" "batch_to_ecs_egress" {
+  type                     = "egress"
+  security_group_id        = aws_security_group.batch_instances.id
+  from_port                = var.container_port
+  to_port                  = var.container_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.ecs_tasks.id
+}
