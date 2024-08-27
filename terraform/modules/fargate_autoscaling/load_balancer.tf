@@ -8,7 +8,7 @@ resource "aws_lb" "default" {
   enable_cross_zone_load_balancing = true
 
   subnets         = var.public_subnet_ids
-  security_groups = [aws_security_group.lb[0].id]
+  security_groups = [aws_security_group.lb.id]
 
   tags = var.tags
 }
