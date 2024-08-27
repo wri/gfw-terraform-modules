@@ -80,7 +80,7 @@ resource "aws_security_group_rule" "lb" {
   security_group_id = var.load_balancer_security_group
 }
 
-# Allow Batch tasks to reach the API
+# Allow Batch instances to reach the API
 resource "aws_security_group" "batch_instances" {
   name        = substr("${var.project}-batch-instances${var.name_suffix}", 0, 64)
   description = "Security group for AWS Batch instances"
@@ -88,8 +88,8 @@ resource "aws_security_group" "batch_instances" {
 
   egress {
     protocol    = "tcp"
-    from_port   = var.container_port
-    to_port     = var.container_port
+    from_port   = var.listener_port
+    to_port     = var.listener_port
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -104,8 +104,8 @@ resource "aws_security_group" "batch_instances" {
 resource "aws_security_group_rule" "ecs_tasks_ingress_from_batch" {
   type                     = "ingress"
   security_group_id        = aws_security_group.ecs_tasks.id
-  from_port                = var.container_port
-  to_port                  = var.container_port
+  from_port                = var.listener_port
+  to_port                  = var.listener_port
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.batch_instances.id
 }
@@ -113,8 +113,8 @@ resource "aws_security_group_rule" "ecs_tasks_ingress_from_batch" {
 resource "aws_security_group_rule" "batch_to_ecs_egress" {
   type                     = "egress"
   security_group_id        = aws_security_group.batch_instances.id
-  from_port                = var.container_port
-  to_port                  = var.container_port
+  from_port                = var.listener_port
+  to_port                  = var.listener_port
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.ecs_tasks.id
 }
