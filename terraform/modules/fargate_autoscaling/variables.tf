@@ -42,7 +42,7 @@ variable "load_balancer_arn" {
 variable "load_balancer_security_group" {
   type        = string
   default     = ""
-  description = "Optional secuirty group of load balancer with which the task can communicate. Required if load_blancer_arn is not empty"
+  description = "Optional security group of load balancer with which the task can communicate. Required if load_balancer_arn is not empty"
 }
 
 variable "container_name" {

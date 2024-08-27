@@ -11,7 +11,8 @@ resource "aws_security_group" "lb" {
 }
 
 # Load Balancer Ingress Rules
-resource "aws_security_group_ingress_rule" "lb_ingress_http" {
+resource "aws_security_group_rule" "lb_ingress_http" {
+  type              = "ingress"
   security_group_id = aws_security_group.lb.id
   protocol          = "tcp"
   from_port         = var.acm_certificate_arn == null ? 80 : var.listener_port
@@ -19,7 +20,8 @@ resource "aws_security_group_ingress_rule" "lb_ingress_http" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_ingress_rule" "lb_ingress_https" {
+resource "aws_security_group_rule" "lb_ingress_https" {
+  type              = "ingress"
   count             = var.acm_certificate_arn == null ? 0 : 1
   security_group_id = aws_security_group.lb.id
   protocol          = "tcp"
@@ -29,7 +31,8 @@ resource "aws_security_group_ingress_rule" "lb_ingress_https" {
 }
 
 # Load Balancer Egress to ECS Tasks
-resource "aws_security_group_egress_rule" "lb_to_ecs_egress" {
+resource "aws_security_group_rule" "lb_to_ecs_egress" {
+  type                     = "egress"
   security_group_id        = aws_security_group.lb.id
   protocol                 = "tcp"
   from_port                = var.listener_port
@@ -50,7 +53,8 @@ resource "aws_security_group" "ecs_tasks" {
 }
 
 # ECS Tasks Ingress Rules
-resource "aws_security_group_ingress_rule" "ecs_tasks_ingress_from_lb" {
+resource "aws_security_group_rule" "ecs_tasks_ingress_from_lb" {
+  type                     = "ingress"
   security_group_id        = aws_security_group.ecs_tasks.id
   protocol                 = "tcp"
   from_port                = var.listener_port
@@ -58,7 +62,8 @@ resource "aws_security_group_ingress_rule" "ecs_tasks_ingress_from_lb" {
   source_security_group_id = aws_security_group.lb.id
 }
 
-resource "aws_security_group_ingress_rule" "ecs_tasks_ingress_from_batch" {
+resource "aws_security_group_rule" "ecs_tasks_ingress_from_batch" {
+  type                     = "ingress"
   security_group_id        = aws_security_group.ecs_tasks.id
   protocol                 = "tcp"
   from_port                = var.listener_port
@@ -67,7 +72,8 @@ resource "aws_security_group_ingress_rule" "ecs_tasks_ingress_from_batch" {
 }
 
 # ECS Tasks Egress Rule
-resource "aws_security_group_egress_rule" "ecs_tasks_egress" {
+resource "aws_security_group_rule" "ecs_tasks_egress" {
+  type              = "egress"
   security_group_id = aws_security_group.ecs_tasks.id
   protocol          = "-1"
   from_port         = 0
@@ -88,7 +94,8 @@ resource "aws_security_group" "batch_instances" {
 }
 
 # Batch Instances Egress to ECS Tasks
-resource "aws_security_group_egress_rule" "batch_to_ecs_egress" {
+resource "aws_security_group_rule" "batch_to_ecs_egress" {
+  type                     = "egress"
   security_group_id        = aws_security_group.batch_instances.id
   protocol                 = "tcp"
   from_port                = var.listener_port
