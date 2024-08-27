@@ -3,6 +3,11 @@ output "ecs_security_group_id" {
   description = "Security group ID of the ECS service security group."
 }
 
+output "batch_security_group_id" {
+  value       = aws_security_group.batch_instances.id
+  description = "ID of the Batch instance security group."
+}
+
 output "lb_dns_name" {
   value       = length(aws_lb.default) == 1 ? aws_lb.default[0].dns_name : ""
   description = "DNS of application load balance"
