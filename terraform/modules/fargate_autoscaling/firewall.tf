@@ -16,7 +16,6 @@ resource "aws_security_group" "lb" {
 
 # Externally defined ingress rules for ALB Security Group
 resource "aws_security_group_rule" "alb_ingress_http" {
-  count             = var.load_balancer_security_group == "" ? 1 : 0
   security_group_id = var.load_balancer_security_group == "" ? aws_security_group.lb[0].id : var.load_balancer_security_group
   protocol          = "tcp"
   from_port         = var.acm_certificate_arn == null ? 80 : var.listener_port
