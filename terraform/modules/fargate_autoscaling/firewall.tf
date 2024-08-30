@@ -98,6 +98,6 @@ resource "aws_security_group_rule" "ecs_tasks_ingress_batch" {
   protocol          = "tcp"
   from_port         = var.listener_port
   to_port           = var.listener_port
-  source_security_group_id = aws_security_group.batch_jobs.id
+  source_security_group_id = aws_security_group.batch_instances.id
   type              = "ingress"
 }
