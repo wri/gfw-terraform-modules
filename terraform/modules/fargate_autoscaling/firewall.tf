@@ -18,8 +18,8 @@ resource "aws_security_group" "lb" {
 resource "aws_security_group_rule" "alb_ingress_http" {
   security_group_id = var.load_balancer_security_group == "" ? aws_security_group.lb[0].id : var.load_balancer_security_group
   protocol          = "tcp"
-  from_port         = var.acm_certificate_arn == null ? 80 : var.listener_port
-  to_port           = var.acm_certificate_arn == null ? 80 : var.listener_port
+  from_port         = var.load_balancer_security_group == "" ? 80 : var.listener_port
+  to_port           = var.load_balancer_security_group == "" ? 80 : var.listener_port
   cidr_blocks       = ["0.0.0.0/0"]
   type              = "ingress"
 }
