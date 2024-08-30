@@ -14,7 +14,6 @@ resource "aws_security_group" "lb" {
   )
 }
 
-# Externally defined ingress rules for ALB Security Group
 resource "aws_security_group_rule" "alb_ingress_http" {
   security_group_id = var.load_balancer_security_group == "" ? aws_security_group.lb[0].id : var.load_balancer_security_group
   protocol          = "tcp"
@@ -78,7 +77,7 @@ resource "aws_security_group_rule" "lb_task_egress" {
   source_security_group_id = aws_security_group.ecs_tasks.id
 }
 
-# Security group for Batch jobs
+# Security group for Batch instances
 resource "aws_security_group" "batch_instances" {
   name        = substr("${var.project}-batch-instances${var.name_suffix}", 0, 64)
   description = "Security group for AWS Batch jobs"
@@ -92,11 +91,22 @@ resource "aws_security_group" "batch_instances" {
   )
 }
 
-resource "aws_security_group_rule" "ecs_tasks_egress_batch" {
-  security_group_id = aws_security_group.ecs_tasks.id
-  protocol          = "tcp"
-  from_port         = var.listener_port
-  to_port           = var.listener_port
-  source_security_group_id = aws_security_group.batch_instances.id
+# Egress rule for Batch instances (if needed, otherwise default egress allows all)
+resource "aws_security_group_rule" "batch_instances_egress" {
+  security_group_id = aws_security_group.batch_instances.id
+  protocol          = "-1"
+  from_port         = 0
+  to_port           = 0
+  cidr_blocks       = ["0.0.0.0/0"]
   type              = "egress"
+}
+
+# Allow Batch instances to communicate with ECS Tasks
+resource "aws_security_group_rule" "ecs_tasks_ingress_batch" {
+  security_group_id        = aws_security_group.ecs_tasks.id
+  protocol                 = "tcp"
+  from_port                = var.listener_port
+  to_port                  = var.listener_port
+  source_security_group_id = aws_security_group.batch_instances.id
+  type                     = "ingress"
 }
