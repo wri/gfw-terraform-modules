@@ -26,3 +26,8 @@ output "ecs_update_service_policy_arn" {
   value       = aws_iam_policy.ecs_update_service_policy.arn
   description = "ARN of IAM policy to allow updating ECS service"
 }
+
+output "batch_security_group_id" {
+  value       = aws_security_group.batch_instances.id
+  description = "ID of the Batch instance security group."
+}
