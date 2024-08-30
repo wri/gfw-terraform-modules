@@ -16,7 +16,7 @@ resource "aws_security_group" "lb" {
 
 # Externally defined ingress rules for ALB Security Group
 resource "aws_security_group_rule" "alb_ingress_http" {
-  security_group_id = aws_security_group.lb[0].id
+  security_group_id = var.load_balancer_security_group == "" ? aws_security_group.lb.id : var.load_balancer_security_group.id
   protocol          = "tcp"
   from_port         = var.acm_certificate_arn == null ? 80 : var.listener_port
   to_port           = var.acm_certificate_arn == null ? 80 : var.listener_port
@@ -25,7 +25,8 @@ resource "aws_security_group_rule" "alb_ingress_http" {
 }
 
 resource "aws_security_group_rule" "alb_ingress_https" {
-  security_group_id = aws_security_group.lb[0].id
+  count             = var.acm_certificate_arn == null ? 0 : 1
+  security_group_id = aws_security_group.lb.id
   protocol          = "tcp"
   from_port         = 443
   to_port           = 443
@@ -49,12 +50,12 @@ resource "aws_security_group" "ecs_tasks" {
 
 # Externally defined ingress rule for ECS Tasks Security Group
 resource "aws_security_group_rule" "ecs_tasks_ingress" {
-  security_group_id = aws_security_group.ecs_tasks.id
-  protocol          = "tcp"
-  from_port         = var.container_port
-  to_port           = var.container_port
-  source_security_group_id = length(aws_security_group.lb) > 0 ? aws_security_group.lb[0].id : var.load_balancer_security_group
-  type              = "ingress"
+  security_group_id         = aws_security_group.ecs_tasks.id
+  protocol                  = "tcp"
+  from_port                 = var.container_port
+  to_port                   = var.container_port
+  source_security_group_id  = var.load_balancer_security_group == "" ? aws_security_group.lb.id : var.load_balancer_security_group
+  type                      = "ingress"
 }
 
 # Externally defined egress rule for ECS Tasks Security Group
@@ -69,7 +70,7 @@ resource "aws_security_group_rule" "ecs_tasks_egress" {
 
 # Egress rule for Load Balancer to ECS Tasks
 resource "aws_security_group_rule" "lb_task_egress" {
-  security_group_id        = length(aws_security_group.lb) == 1 ? aws_security_group.lb[0].id : var.load_balancer_security_group
+  security_group_id        = var.load_balancer_security_group == "" ? aws_security_group.lb.id : var.load_balancer_security_group
   from_port                = var.container_port
   to_port                  = var.container_port
   protocol                 = "tcp"
