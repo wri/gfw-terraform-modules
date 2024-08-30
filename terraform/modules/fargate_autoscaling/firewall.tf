@@ -91,6 +91,16 @@ resource "aws_security_group" "batch_instances" {
   )
 }
 
+# Egress rule for Batch instances
+resource "aws_security_group_rule" "batch_instances_egress" {
+  security_group_id = aws_security_group.batch_instances.id
+  protocol          = "-1"
+  from_port         = 0
+  to_port           = 0
+  cidr_blocks       = ["0.0.0.0/0"]
+  type              = "egress"
+}
+
 # Allow Batch instances to communicate with ECS Tasks
 resource "aws_security_group_rule" "ecs_tasks_ingress_batch" {
   security_group_id        = aws_security_group.ecs_tasks.id
