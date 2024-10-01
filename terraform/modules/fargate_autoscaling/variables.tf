@@ -57,8 +57,7 @@ variable "container_port" {
 
 variable "listener_port" {
   type        = number
-  description = "The default port the Load Balancer should listen to. Will be ignored when acm_certificate is set."
-  default     = 80
+  description = "The port the ECS task/load balancer should listen to when acm_certificate_arn is not set (i.e. in dev)."
 }
 
 variable "desired_count" {
@@ -124,5 +123,5 @@ variable "force_new_deployment" {
 variable "acm_certificate_arn" {
   type        = string
   default     = null
-  description = "The ACM/ SSL certificate to use. When set, listener port will be set to 443. Request to port 80 will be forwarded. All other ports will be closed."
+  description = "The ACM/SSL certificate, if any. When set, tasks will listen on port 443 and requests to port 80 will be forwarded. All other ports will be closed."
 }
