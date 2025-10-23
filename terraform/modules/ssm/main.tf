@@ -1,5 +1,5 @@
 locals {
-  base_path = "${var.ssm_prefix}/${var.env}/${var.namespace}"
+  base_path = "${var.ssm_prefix}/${var.environment}/${var.namespace}"
   contract_with_meta = merge(
     { contract_version = var.contract_version, env = var.environment, namespace = var.namespace },
     var.contract

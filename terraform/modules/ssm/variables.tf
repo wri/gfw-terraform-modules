@@ -10,7 +10,7 @@ variable "ssm_prefix" {
 }
 
 variable "namespace" {
-  description = "Logical name for this contract (e.g., gfw-core or gfw-aws-core-infra)"
+  description = "Logical name for this contract (e.g., gfw-data-api or gfw-aws-core-infra)"
   type        = string
 }
 
