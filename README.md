@@ -7,6 +7,6 @@ Currently, the following modules are available.
 - AWS Container Registry
 - AWS Fargate with autoscaling
 
-When using modules, always refer to a version tag, never directly to master since breaking changes may occure.
+When using modules, always refer to a version tag, never directly to master since breaking changes may occur.
 
 More details about usage in the corresponding module folders.

@@ -22,4 +22,3 @@ resource "aws_iam_policy" "default" {
   name   = replace("${var.project}-read-secret-${var.name}", "/", "-")
   policy = data.template_file.default.rendered
 }
-
