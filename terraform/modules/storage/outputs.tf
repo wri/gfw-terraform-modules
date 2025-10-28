@@ -1,9 +1,15 @@
+##################################
+# Outputs
+##################################
+
 output "bucket_id" {
   value = aws_s3_bucket.default.id
 }
 
+# write_policy_arns used to rely on count-based splat. With for_each,
+# a clean, explicit list comp avoids weird ordering assumptions.
 output "write_policy_arns" {
-  value = aws_iam_policy.s3_write_access[*].arn
+  value = [for p in aws_iam_policy.s3_write_access : p.arn]
 }
 
 output "read_policy_arn" {
