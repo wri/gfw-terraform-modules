@@ -31,27 +31,73 @@ locals {
     }
   ]
 
+  ########################################
+  # Backward-compatibility shim for read_roles
+  #
+  # The old module expected users to sometimes pass
+  #   [
+  #     jsonencode(["arn:aws:iam::123:root", "arn:aws:iam::456:root"]),
+  #     jsonencode(["arn:aws:iam::789:role/core-emr_profile"])
+  #   ]
+  # i.e. a list of JSON-encoded arrays of ARNs.
+  #
+  # The new module just wants a flat list of ARNs:
+  #   ["arn:aws:iam::123:root", "arn:aws:iam::456:root", "arn:aws:iam::789:role/core-emr_profile"]
+  #
+  # We'll accept EITHER form. Here's how:
+  ########################################
+
+  # Step 1: best-effort decode each element.
+  # - If it's valid JSON that decodes to a list -> use that list.
+  # - Otherwise assume it's already a plain ARN string and wrap it as a 1-element list.
+  #
+  # Terraform doesn't have "try to jsondecode(), fallback", so we do a heuristic:
+  # If the string starts with "[" and ends with "]", we assume it's JSON for a list and jsondecode() it.
+  # Else we assume it's a raw ARN.
+  #
+  # NOTE: On Terraform 0.13, you *do* have jsondecode(), and you *do* have regex(), so we can branch on a regex.
+  #
+  # First coerce every entry in var.read_roles to string, to simplify handling.
+  _read_roles_as_strings = [
+    for r in var.read_roles : tostring(r)
+  ]
+
+  # Split into either a decoded list or a singleton.
+  _read_roles_lists = [
+    for raw in local._read_roles_as_strings :
+    (
+      can(regex("^\\[", raw)) && can(regex("\\]$", raw))
+      ?
+      jsondecode(raw)
+      :
+      [raw]
+    )
+  ]
+
+  # Flatten the list-of-lists.
+  normalized_read_roles = flatten(local._read_roles_lists)
+
   # 2. Read-only access for specific IAM roles/ARNs (var.read_roles)
   # Allow GetObject/ListBucket to those principals
-  role_statements_list = [
-    for role_arn in var.read_roles : {
-      sid        = "ReadAccess_${replace(role_arn, ":", "_")}"
-      effect     = "Allow"
-      principals = [{
-        type        = "AWS"
-        identifiers = [role_arn]
-      }]
-      actions = [
-        "s3:GetObject",
-        "s3:ListBucket",
-      ]
-      resources = [
-        aws_s3_bucket.default.arn,
-        "${aws_s3_bucket.default.arn}/*",
-      ]
-      conditions = []
-    }
-  ]
+role_statements_list = [
+  for role_arn in local.normalized_read_roles : {
+    sid        = "ReadAccess_${replace(role_arn, ":", "_")}"
+    effect     = "Allow"
+    principals = [{
+      type        = "AWS"
+      identifiers = [role_arn]
+    }]
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket",
+    ]
+    resources = [
+      aws_s3_bucket.default.arn,
+      "${aws_s3_bucket.default.arn}/*",
+    ]
+    conditions = []
+  }
+]
 
   # 3. Optional server-side encryption enforcement
   # Deny PutObject if no SSE header is provided
