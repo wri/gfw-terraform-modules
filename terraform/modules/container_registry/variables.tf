@@ -3,6 +3,12 @@ variable "image_name" {
   type        = string
 }
 
+variable "force_delete" {
+  description = "Whether or not to allow deleting non-empty ECR repos"
+  type        = bool
+  default     = false
+}
+
 variable "root_dir" {
   description = "Root dir used in Dockerfile"
   type        = string
