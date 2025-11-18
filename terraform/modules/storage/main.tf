@@ -258,37 +258,42 @@ resource "aws_s3_bucket_policy" "default" {
 ##################################
 # IAM policy: WRITE access (per-prefix)
 ##################################
-
 # Build one aws_iam_policy_document per writeable prefix.
 # Using for_each on the data source is supported in 0.13+.
-data "aws_iam_policy_document" "write_access" {
+resource "aws_iam_policy" "s3_write_access" {
   for_each = local.write_policy_specs_map
 
-  statement {
-    sid = substr(
-      regexreplace(
-        "WriteAccess_${prefix}",
-        "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
-        ""
-      ),
-      0,
-      64
-    )
+  name = "${var.project}-s3_write_${var.bucket_name}_${each.key}"
+  description = "Write access to s3://${var.bucket_name}/${each.value.prefix}"
 
-    effect = "Allow"
-
-    actions = [
-      "s3:PutObject",
-      "s3:PutObjectAcl",
-      "s3:AbortMultipartUpload",
-      "s3:ListBucketMultipartUploads",
-      "s3:ListMultipartUploadParts",
+  # Build the policy JSON deterministically
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = substr(
+          regexreplace(
+            format("WriteAccess_%s", each.value.prefix),
+            "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
+            ""
+          ),
+          0,
+          64
+        )
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:AbortMultipartUpload",
+          "s3:ListBucketMultipartUploads",
+          "s3:ListMultipartUploadParts",
+        ]
+        Resource = [
+          "${aws_s3_bucket.default.arn}/${each.value.prefix}*",
+        ]
+      }
     ]
-
-    resources = [
-      "${aws_s3_bucket.default.arn}/${each.value.prefix}*",
-    ]
-  }
+  })
 }
 
 # Create one IAM policy per prefix.
