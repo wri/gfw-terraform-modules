@@ -15,10 +15,9 @@ locals {
   public_statements_list = [
     for prefix in var.public_folders : {
       sid = substr(
-        regexreplace(
-          "PublicRead_${prefix}",
-          "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
-          ""
+        join(
+          "",
+          regexall("[A-Za-z0-9]", format("PublicRead_%s", each))
         ),
         0,
         64
@@ -92,14 +91,14 @@ locals {
   role_statements_list = [
     for role_arn in local.normalized_read_roles : {
       sid = substr(
-        regexreplace(
-          "ReadAccess_${role_arn}",
-          "[^A-Za-z0-9]",
-          ""
+        join(
+          "",
+          regexall("[A-Za-z0-9]", format("ReadAccess_%s", role_arn))
         ),
         0,
         64
       )
+
       effect = "Allow"
       principals = [
         {
@@ -272,10 +271,9 @@ resource "aws_iam_policy" "s3_write_access" {
     Statement = [
       {
         Sid = substr(
-          regexreplace(
-            format("WriteAccess_%s", each.value.prefix),
-            "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
-            ""
+          join(
+            "",
+            regexall("[A-Za-z0-9]", format("WriteAccess_%s", each.value.prefix))
           ),
           0,
           64
