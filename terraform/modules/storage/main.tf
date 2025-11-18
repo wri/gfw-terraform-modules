@@ -14,12 +14,22 @@ locals {
   # Allow anonymous GetObject for specified prefixes
   public_statements_list = [
     for prefix in var.public_folders : {
-      sid        = "PublicRead_${replace(prefix, "/", "_")}"
-      effect     = "Allow"
-      principals = [{
-        type        = "*"
-        identifiers = ["*"]
-      }]
+      sid = substr(
+        regexreplace(
+          "PublicRead_${prefix}",
+          "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
+          ""
+        ),
+        0,
+        64
+      )
+      effect = "Allow"
+      principals = [
+        {
+          type = "*"
+          identifiers = ["*"]
+        }
+      ]
       actions = [
         "s3:GetObject",
       ]
@@ -79,25 +89,35 @@ locals {
 
   # 2. Read-only access for specific IAM roles/ARNs (var.read_roles)
   # Allow GetObject/ListBucket to those principals
-role_statements_list = [
-  for role_arn in local.normalized_read_roles : {
-    sid        = "ReadAccess_${replace(role_arn, ":", "_")}"
-    effect     = "Allow"
-    principals = [{
-      type        = "AWS"
-      identifiers = [role_arn]
-    }]
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-    ]
-    resources = [
-      aws_s3_bucket.default.arn,
-      "${aws_s3_bucket.default.arn}/*",
-    ]
-    conditions = []
-  }
-]
+  role_statements_list = [
+    for role_arn in local.normalized_read_roles : {
+      sid = substr(
+        regexreplace(
+          "ReadAccess_${role_arn}",
+          "[^A-Za-z0-9]",
+          ""
+        ),
+        0,
+        64
+      )
+      effect = "Allow"
+      principals = [
+        {
+          type = "AWS"
+          identifiers = [role_arn]
+        }
+      ]
+      actions = [
+        "s3:GetObject",
+        "s3:ListBucket",
+      ]
+      resources = [
+        aws_s3_bucket.default.arn,
+        "${aws_s3_bucket.default.arn}/*",
+      ]
+      conditions = []
+    }
+  ]
 
   # 3. Optional server-side encryption enforcement
   # Deny PutObject if no SSE header is provided
@@ -245,7 +265,16 @@ data "aws_iam_policy_document" "write_access" {
   for_each = local.write_policy_specs_map
 
   statement {
-    sid    = "WriteAccess_${replace(each.value.prefix, "/", "_")}"
+    sid = substr(
+      regexreplace(
+        "WriteAccess_${prefix}",
+        "[^A-Za-z0-9]", # strip anything not A–Z or 0–9
+        ""
+      ),
+      0,
+      64
+    )
+
     effect = "Allow"
 
     actions = [
@@ -275,6 +304,46 @@ resource "aws_iam_policy" "s3_write_access" {
     ignore_changes = [tags_all]
   }
 }
+
+# Also, TF had trouble deleting one of the old-style policies
+# because it was attached to a million roles in dev due to old
+# branch leftovers. I'm not sure if the problem will rear its head
+# in higher environments. So, create a duplicate of the old policy
+# with ignore-changes to avoid breaking anything, and clean up
+# later at our leisure.
+resource "aws_iam_policy" "s3_write_pipelines_legacy" {
+  # IMPORTANT: name must match the real existing policy so TF
+  # doesn’t create a new one. For the data-lake dev bucket:
+  #   core-s3_write_gfw-data-lake-dev_0
+  name = "${var.project}-s3_write_${var.bucket_name}_0"
+
+  # This policy body should match the old one as closely as possible.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "s3:ListBucket",
+          "s3:PutBucketLifecycleConfiguration",
+        ]
+        Resource = "arn:aws:s3:::${var.bucket_name}"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "s3:*Object"
+        Resource = "arn:aws:s3:::${var.bucket_name}/*"
+      },
+    ]
+  })
+
+  lifecycle {
+    # Don't let Terraform try to change or delete this;
+    # it exists as a legacy artifact.
+    ignore_changes = [policy, tags_all]
+  }
+}
+
 
 ##################################
 # IAM policy: READ access (entire bucket)
