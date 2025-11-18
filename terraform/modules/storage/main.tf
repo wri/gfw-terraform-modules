@@ -296,19 +296,6 @@ resource "aws_iam_policy" "s3_write_access" {
   })
 }
 
-# Create one IAM policy per prefix.
-resource "aws_iam_policy" "s3_write_access" {
-  for_each = local.write_policy_specs_map
-
-  name        = "${var.project}-s3_write_${var.bucket_name}_${each.key}"
-  description = "Write access to s3://${var.bucket_name}/${each.value.prefix}"
-  policy      = data.aws_iam_policy_document.write_access[each.key].json
-
-  # Ignore tag drift here too if your org injects tags on IAM policies
-  lifecycle {
-    ignore_changes = [tags_all]
-  }
-}
 
 # Also, TF had trouble deleting one of the old-style policies
 # because it was attached to a million roles in dev due to old
