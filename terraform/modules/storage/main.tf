@@ -17,7 +17,7 @@ locals {
       sid = substr(
         join(
           "",
-          regexall("[A-Za-z0-9]", format("PublicRead_%s", each))
+          regexall("[A-Za-z0-9]", format("PublicRead_%s", prefix))
         ),
         0,
         64
