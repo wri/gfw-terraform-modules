@@ -251,12 +251,15 @@ data "aws_iam_policy_document" "bucket" {
 }
 
 # Attach the bucket policy only if we actually have statements to attach.
-# (Mirrors your original "count = ... ? 1 : 0" logic)
-resource "aws_s3_bucket_policy" "default" {
-  count  = length(local.all_bucket_policy_statements_list) > 0 ? 1 : 0
-  bucket = aws_s3_bucket.default.id
-  policy = data.aws_iam_policy_document.bucket.json
-}
+
+# Temporarily disable the new bucket policy attachment until
+# we're ready to cut over from the legacy templates.
+
+# resource "aws_s3_bucket_policy" "default" {
+#   count  = length(local.all_bucket_policy_statements_list) > 0 ? 1 : 0
+#   bucket = aws_s3_bucket.default.id
+#   policy = data.aws_iam_policy_document.bucket.json
+# }
 
 ##################################
 # IAM policy: WRITE access (per-prefix)
@@ -328,5 +331,96 @@ resource "aws_iam_policy" "s3_read_access" {
 
   lifecycle {
     ignore_changes = [tags_all]
+  }
+}
+
+########################
+# Legacy Bucket policies
+########################
+
+# Please do not use! Switch to using the new v2 policies above,
+# as exposed via SSM
+
+resource "aws_s3_bucket_policy" "legacy" {
+  count  = length(var.public_folders) + length(var.read_roles) + (var.enforce_server_side_encryption ? 1 : 0) > 0 ? 1 : 0
+  bucket = aws_s3_bucket.default.id
+  policy = module.bucket_policy.result_document
+}
+
+data "template_file" "public_folders_bucket_policy" {
+  count    = length(var.public_folders)
+  template = file("${path.module}/templates/bucket_policy_public_read.json.tpl")
+  vars = {
+    bucket_arn = aws_s3_bucket.default.arn
+    prefix     = var.public_folders[count.index]
+  }
+}
+
+data "template_file" "read_access_role_bucket_policy" {
+  count    = length(var.read_roles)
+  template = file("${path.module}/templates/bucket_policy_role_read.json.tpl")
+  vars = {
+    bucket_arn       = aws_s3_bucket.default.arn
+    aws_resource_arn = var.read_roles[count.index]
+  }
+}
+
+data "template_file" "server-side-encryption" {
+  count    = var.enforce_server_side_encryption ? 1 : 0
+  template = file("${path.module}/templates/bucket_policy_server-side-encryption.json.tpl")
+  vars = {
+    bucket_arn       = aws_s3_bucket.default.arn
+  }
+}
+
+# merge pipeline policies into one document
+module "bucket_policy" {
+  source = "git::https://github.com/cloudposse/terraform-aws-iam-policy-document-aggregator.git?ref=0.6.0"
+  source_documents = concat(
+    data.template_file.public_folders_bucket_policy[*].rendered,
+    data.template_file.read_access_role_bucket_policy[*].rendered,
+    data.template_file.server-side-encryption[*].rendered
+  )
+}
+
+#####################
+# Legacy IAM policies
+#####################
+
+# Please do not use! Switch to using the new v2 policies above,
+# as exposed via SSM
+
+data "template_file" "write_access" {
+  count    = length(var.write_policy_prefix)
+  template = file("${path.module}/templates/iam_policy_s3_write.json.tpl")
+  vars = {
+    bucket_arn = aws_s3_bucket.default.arn
+    prefix     = var.write_policy_prefix[count.index]
+  }
+}
+
+resource "aws_iam_policy" "s3_write_legacy" {
+  count  = length(var.write_policy_prefix)
+  name   = "${var.project}-s3_write_${var.bucket_name}_${count.index}"
+  policy = data.template_file.write_access[count.index].rendered
+  lifecycle {
+    # We only want TF to track existence, not rewrite behavior.
+    ignore_changes = [policy, tags_all]
+  }
+}
+
+data "template_file" "read_access" {
+  template = file("${path.module}/templates/iam_policy_s3_read.json.tpl")
+  vars = {
+    bucket_arn = aws_s3_bucket.default.arn
+  }
+}
+
+resource "aws_iam_policy" "s3_read_legacy" {
+  name   = "${var.project}-s3_read_${var.bucket_name}"
+  policy = data.template_file.read_access.rendered
+  lifecycle {
+    # We only want TF to track existence, not rewrite behavior.
+    ignore_changes = [policy, tags_all]
   }
 }
