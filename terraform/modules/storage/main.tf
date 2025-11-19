@@ -266,7 +266,7 @@ resource "aws_s3_bucket_policy" "default" {
 resource "aws_iam_policy" "s3_write_access" {
   for_each = local.write_policy_specs_map
 
-  name = "${var.project}-s3_write_${var.bucket_name}_${each.key}"
+  name = "${var.project}-s3_write_${var.bucket_name}_${each.key}_v2"
   description = "Write access to s3://${var.bucket_name}/${each.value.prefix}"
 
   # Build the policy JSON deterministically
@@ -299,46 +299,6 @@ resource "aws_iam_policy" "s3_write_access" {
 }
 
 
-# Also, TF had trouble deleting one of the old-style policies
-# because it was attached to a million roles in dev due to old
-# branch leftovers. I'm not sure if the problem will rear its head
-# in higher environments. So, create a duplicate of the old policy
-# with ignore-changes to avoid breaking anything, and clean up
-# later at our leisure.
-resource "aws_iam_policy" "s3_write_pipelines_legacy" {
-  # IMPORTANT: name must match the real existing policy so TF
-  # doesn’t create a new one. For the data-lake dev bucket:
-  #   core-s3_write_gfw-data-lake-dev_0
-  name = "${var.project}-s3_write_${var.bucket_name}_0"
-
-  # This policy body should match the old one as closely as possible.
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:PutBucketLifecycleConfiguration",
-        ]
-        Resource = "arn:aws:s3:::${var.bucket_name}"
-      },
-      {
-        Effect   = "Allow"
-        Action   = "s3:*Object"
-        Resource = "arn:aws:s3:::${var.bucket_name}/*"
-      },
-    ]
-  })
-
-  lifecycle {
-    # Don't let Terraform try to change or delete this;
-    # it exists as a legacy artifact.
-    ignore_changes = [policy, tags_all]
-  }
-}
-
-
 ##################################
 # IAM policy: READ access (entire bucket)
 ##################################
@@ -362,7 +322,7 @@ data "aws_iam_policy_document" "read_access" {
 }
 
 resource "aws_iam_policy" "s3_read_access" {
-  name        = "${var.project}-s3_read_${var.bucket_name}"
+  name        = "${var.project}-s3_read_${var.bucket_name}_v2"
   description = "Read access to s3://${var.bucket_name}"
   policy      = data.aws_iam_policy_document.read_access.json
 
