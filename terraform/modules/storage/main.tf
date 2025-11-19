@@ -122,23 +122,27 @@ locals {
   # Deny PutObject if no SSE header is provided
   encryption_statements_list = var.enforce_server_side_encryption ? [
     {
-      sid        = "DenyUnencryptedObjectUploads"
-      effect     = "Deny"
-      principals = [{
-        type        = "*"
-        identifiers = ["*"]
-      }]
+      sid    = "DenyUnencryptedObjectUploads"
+      effect = "Deny"
+      principals = [
+        {
+          type = "*"
+          identifiers = ["*"]
+        }
+      ]
       actions = [
         "s3:PutObject",
       ]
       resources = [
         "${aws_s3_bucket.default.arn}/*",
       ]
-      conditions = [{
-        test     = "StringNotEquals"
-        variable = "s3:x-amz-server-side-encryption"
-        values   = ["AES256", "aws:kms"]
-      }]
+      conditions = [
+        {
+          test     = "StringNotEquals"
+          variable = "s3:x-amz-server-side-encryption"
+          values = ["AES256", "aws:kms"]
+        }
+      ]
     }
   ] : []
 
