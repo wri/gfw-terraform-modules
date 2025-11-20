@@ -12,6 +12,7 @@ data "external" "hash" {
 
 resource "aws_ecr_repository" "repo" {
   name = lower(var.image_name)
+  force_delete = var.force_delete
 }
 
 resource "aws_ecr_lifecycle_policy" "repo-policy" {
