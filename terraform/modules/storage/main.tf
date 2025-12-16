@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "s3_logging_putobject" {
   count = var.enable_s3_logging_putobject_policy ? 1 : 0
 
   statement {
-    sid    = "S3PolicyStmt-DO-NOT-MODIFY-1702880099413"
+    sid    = "S3PolicyStmt-DO-NOT-MODIFY"
     effect = "Allow"
 
     principals {
