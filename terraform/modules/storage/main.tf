@@ -44,12 +44,36 @@ resource "aws_s3_bucket" "default" {
   }
 }
 
+
+# Logging service policy statement only for pipelines bucket
+data "aws_iam_policy_document" "s3_logging_putobject" {
+  count = var.enable_s3_logging_putobject_policy ? 1 : 0
+
+  statement {
+    sid    = "S3PolicyStmt-DO-NOT-MODIFY-1702880099413"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.default.arn}/*"]
+  }
+}
+
 #################
 # Bucket policies
 #################
 
 resource "aws_s3_bucket_policy" "default" {
-  count  = length(var.public_folders) + length(var.read_roles) + (var.enforce_server_side_encryption ? 1 : 0) > 0 ? 1 : 0
+  count = (
+    length(var.public_folders) +
+    length(var.read_roles) +
+    (var.enforce_server_side_encryption ? 1 : 0) +
+    (var.enable_s3_logging_putobject_policy ? 1 : 0)
+  ) > 0 ? 1 : 0
   bucket = aws_s3_bucket.default.id
   policy = module.bucket_policy.result_document
 }
@@ -82,14 +106,17 @@ data "template_file" "server-side-encryption" {
 }
 
 
-
 # merge pipeline policies into one document
 module "bucket_policy" {
   source = "git::https://github.com/cloudposse/terraform-aws-iam-policy-document-aggregator.git?ref=0.6.0"
   source_documents = concat(
     data.template_file.public_folders_bucket_policy[*].rendered,
-  data.template_file.read_access_role_bucket_policy[*].rendered,
-  data.template_file.server-side-encryption[*].rendered)
+    data.template_file.read_access_role_bucket_policy[*].rendered,
+    data.template_file.server-side-encryption[*].rendered,
+    var.enable_s3_logging_putobject_policy
+      ? [data.aws_iam_policy_document.s3_logging_putobject[0].json]
+      : []
+  )
 }
 
 #################
@@ -104,6 +131,7 @@ data "template_file" "write_access" {
     prefix     = var.write_policy_prefix[count.index]
   }
 }
+
 
 resource "aws_iam_policy" "s3_write_access" {
   count  = length(var.write_policy_prefix)

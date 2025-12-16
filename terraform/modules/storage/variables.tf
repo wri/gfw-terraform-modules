@@ -58,3 +58,8 @@ variable "write_policy_prefix" {
   type    = list(string)
   default = [""]
 }
+
+variable "enable_s3_logging_putobject_policy" {
+  type    = bool
+  default = true
+}
