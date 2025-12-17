@@ -5,7 +5,7 @@ data "aws_ami" "latest-amazon-ecs-optimized" {
 
   filter {
     name   = "name"
-    values = ["amzn-ami-*-amazon-ecs-optimized"]
+    values = ["al2023-ami-ecs-*"]
   }
   filter {
     name   = "architecture"
