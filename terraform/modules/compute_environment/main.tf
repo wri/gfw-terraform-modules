@@ -41,6 +41,18 @@ resource "aws_launch_template" "ecs-optimized" {
     resource_type = "volume"
     tags          = local.tags
   }
+  metadata_options {
+    # "optional" allows both IMDSv1 and IMDSv2. 
+    # Use "required" only if your Scala SDK is updated to a version that supports tokens.
+    http_tokens                 = "optional" 
+    
+    # "2" allows the metadata request to pass from the Docker container 
+    # to the EC2 host and then to the Metadata Service.
+    http_put_response_hop_limit = 2
+    
+    http_endpoint               = "enabled"
+  }
+
 
   user_data = var.use_ephemeral_storage == true ? data.local_file.mount_tmp_enable_swap.content_base64 : ""
 }
