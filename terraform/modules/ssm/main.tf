@@ -15,6 +15,7 @@ resource "aws_ssm_parameter" "contract_json" {
   tier  = "Standard"
   value = jsonencode(local.contract_with_meta)
   tags  = var.tags
+  overwrite = true
 }
 
 # Singles (String)
@@ -26,6 +27,7 @@ resource "aws_ssm_parameter" "singles" {
   tier  = "Standard"
   value = each.value
   tags  = var.tags
+  overwrite = true
 }
 
 # Lists (StringList)
@@ -37,6 +39,7 @@ resource "aws_ssm_parameter" "lists" {
   tier  = "Standard"
   value = join(",", each.value) # must be comma-only, no spaces
   tags  = var.tags
+  overwrite = true
 }
 
 # SecureString (optional)
@@ -49,4 +52,5 @@ resource "aws_ssm_parameter" "secure" {
   tier   = "Standard"
   value  = each.value
   tags   = var.tags
+  overwrite = true
 }
