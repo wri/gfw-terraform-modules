@@ -18,6 +18,8 @@ resource "aws_launch_template" "ecs-optimized" {
   image_id                = data.aws_ami.latest-amazon-ecs-optimized.image_id
   security_group_names    = []
   tags                    = var.tags
+  # Automatically sets the latest version as the default version
+  update_default_version = true
 
   key_name = var.key_pair
 
