@@ -25,7 +25,9 @@ pushd "$ROOT_DIR"
 
 docker build -t "$IMAGE_NAME" -f "$DOCKER_FILE" .
 
-$(aws ecr get-login --no-include-email --region "$REGION")
+aws ecr get-login-password --region "$REGION" | docker login --username AWS \
+          --password-stdin 617001639586.dkr.ecr.$REGION.amazonaws.com
+
 docker tag "$IMAGE_NAME" "$REPOSITORY_URL":"$TAG"
 docker push "$REPOSITORY_URL":"$TAG"
 
