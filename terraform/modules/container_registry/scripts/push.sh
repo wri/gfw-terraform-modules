@@ -7,7 +7,7 @@
 # Usage:
 #
 # # Acquire an AWS session token
-# $ ./push.sh . 123456789012.dkr.ecr.us-west-1.amazonaws.com/hello-world latest
+# $ ./push.sh . 123456789012.dkr.ecr.us-west-1.amazonaws.com/name-of-ecr-repo latest
 #
 
 set -e
@@ -20,13 +20,15 @@ DOCKER_FILE="$DOCKER_PATH/${5:-Dockerfile}"
 
 REGION="$(echo "$REPOSITORY_URL" | cut -d. -f4)"
 IMAGE_NAME="$(echo "$REPOSITORY_URL" | cut -d/ -f2)"
+# The general ECR URL - the REPOSITORY_URL with the repo-name removed.
+ECR_URL="$(echo "$REPOSITORY_URL" | cut -d/ -f1)"
 
 pushd "$ROOT_DIR"
 
 docker build -t "$IMAGE_NAME" -f "$DOCKER_FILE" .
 
 aws ecr get-login-password --region "$REGION" | docker login --username AWS \
-          --password-stdin 617001639586.dkr.ecr.$REGION.amazonaws.com
+          --password-stdin ${ECR_URL}
 
 docker tag "$IMAGE_NAME" "$REPOSITORY_URL":"$TAG"
 docker push "$REPOSITORY_URL":"$TAG"
