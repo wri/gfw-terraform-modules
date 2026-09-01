@@ -12,7 +12,7 @@ locals {
 
 resource "aws_launch_template" "ecs-optimized" {
 
-  name = local.launch_template_name
+  name_prefix = local.launch_template_name
 
   disable_api_termination = false
   image_id                = data.aws_ami.latest-amazon-ecs-optimized.image_id
@@ -43,6 +43,10 @@ resource "aws_launch_template" "ecs-optimized" {
   }
 
   user_data = var.use_ephemeral_storage == true ? data.local_file.mount_tmp_enable_swap.content_base64 : ""
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
