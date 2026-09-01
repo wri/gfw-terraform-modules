@@ -52,6 +52,11 @@ resource "aws_ecs_task_definition" "default" {
   task_role_arn         = aws_iam_role.ecs_task_role.arn
   container_definitions = var.container_definition
   tags                  = var.tags
+
+  runtime_platform {
+    operating_system_family = var.operating_system_family
+    cpu_architecture        = var.cpu_architecture
+  }
 }
 
 # Autoscaling

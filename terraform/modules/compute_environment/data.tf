@@ -3,13 +3,24 @@ data "aws_ami" "latest-amazon-ecs-optimized" {
   most_recent = true
   owners      = ["591542846629"] # AWS
 
+  # Amazon Linux 2023 ECS-optimized AMI, for both architectures
+  #
+  # This module previously used the legacy Amazon Linux 1 ECS-optimized AMI
+  # (amzn-ami-*-amazon-ecs-optimized) for x86_64, which reached end-of-life
+  # on September 15, 2025, and Amazon Linux 2 (amzn2-ami-ecs-hvm-*-arm64-ebs)
+  # reached end-of-life on June 30, 2026 -- after which
+  # AWS Batch blocks creating new compute environments against AL2 AMIs
+  # entirely. Both are past their EOL date as of this module version; AL2023
+  # is the currently supported ECS-optimized AMI family for both
+  # architectures (see aws/amazon-ecs-ami on GitHub for the authoritative
+  # naming and release history).
   filter {
     name   = "name"
-    values = ["amzn-ami-*-amazon-ecs-optimized"]
+    values = ["al2023-ami-ecs-hvm-*-${var.architecture == "arm64" ? "arm64" : "x86_64"}"]
   }
   filter {
     name   = "architecture"
-    values = ["x86_64"]
+    values = [var.architecture == "arm64" ? "arm64" : "x86_64"]
   }
 
   filter {

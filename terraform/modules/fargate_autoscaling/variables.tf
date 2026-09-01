@@ -126,3 +126,15 @@ variable "acm_certificate_arn" {
   default     = null
   description = "The ACM/ SSL certificate to use. When set, listener port will be set to 443. Request to port 80 will be forwarded. All other ports will be closed."
 }
+
+variable "cpu_architecture" {
+  type        = string
+  description = "CPU architecture for the Fargate task's runtime_platform: \"X86_64\" or \"ARM64\". Defaults to \"X86_64\" to preserve prior behavior for existing callers that don't set this -- that's also what AWS itself defaults to when runtime_platform is omitted, which this module always did before this variable existed. When set to \"ARM64\", the container image(s) in container_definition must also be built for arm64, and Fargate requires platform version 1.4.0 or later (the default LATEST platform version satisfies this)."
+  default     = "X86_64"
+}
+
+variable "operating_system_family" {
+  type        = string
+  description = "OS family for the Fargate task's runtime_platform, e.g. \"LINUX\" or a Windows variant like \"WINDOWS_SERVER_2019_FULL\". Defaults to \"LINUX\" to preserve prior behavior for existing callers that don't set this. ARM64 (cpu_architecture) is Linux-only on Fargate -- pairing it with a Windows OS family isn't validated here (this module is pinned to Terraform <0.14, which doesn't support cross-variable validation blocks) but will be rejected by AWS at apply time."
+  default     = "LINUX"
+}

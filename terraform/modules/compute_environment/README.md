@@ -6,6 +6,11 @@ If ephemeral storage is selected (default), Compute Environment will choose from
 and mount one of the available ephemeral storage device (SSD drive) as `/tmp`. 
 It will use the second available ephemeral storage device as SWAP drive.
 
+Supports both x86_64 (default) and arm64 (Graviton) via the `architecture`
+input -- set it to `"arm64"` and pass Graviton instance types (e.g.
+`r7gd`/`c7gd` instead of `r5d`/`c5d`) via `instance_types` to run this
+compute environment on Graviton.
+
 ## Requirements
 
 | Name | Version |
@@ -25,6 +30,7 @@ It will use the second available ephemeral storage device as SWAP drive.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| architecture | CPU architecture for the compute environment's AMI and instances: "x86_64" or "arm64" (Graviton). When "arm64", instance\_types must also be overridden with Graviton instance types. | `string` | `"x86_64"` | no |
 | bid\_percentage | n/a | `number` | `100` | no |
 | compute\_environment\_name | n/a | `string` | `"ephemeral_storage"` | no |
 | ebs\_volume\_size | n/a | `number` | `8` | no |

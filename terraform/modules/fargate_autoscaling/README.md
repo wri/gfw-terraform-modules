@@ -5,6 +5,10 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 - Creates Fargate service using provided container definition 
 - Creates new Application Load Balancer or uses user defined ALB
 
+Supports both X86_64 (default) and ARM64 (Graviton) Fargate tasks via the
+`cpu_architecture` input -- set it to `"ARM64"` and make sure the image(s) in
+`container_definition` are built for arm64.
+
 ## Requirements
 
 | Name | Version |
@@ -31,6 +35,7 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 | container\_definition | JSON object defining the task container | `string` | n/a | yes |
 | container\_name | The name of the container to associate with the load balancer. | `string` | n/a | yes |
 | container\_port | The port on the container to associate with the load balancer. | `number` | n/a | yes |
+| cpu\_architecture | CPU architecture for the Fargate task's runtime\_platform: "X86\_64" or "ARM64". | `string` | `"X86_64"` | no |
 | desired\_count | Number of tasks | `number` | `1` | no |
 | fargate\_cpu | n/a | `number` | `1` | no |
 | fargate\_memory | n/a | `number` | `512` | no |
@@ -39,6 +44,7 @@ Terraform module to create an AWS Fargate Service with autoscaling.
 | load\_balancer\_arn | Optional Load Balancer to use for fargate cluster. When left blank, a new LB will be created | `string` | `""` | no |
 | load\_balancer\_security\_group | Optional secuirty group of load balancer with which the task can communicate. Required if load\_blancer\_arn is not empty | `string` | `""` | no |
 | name\_suffix | n/a | `string` | `""` | no |
+| operating\_system\_family | OS family for the Fargate task's runtime\_platform, e.g. "LINUX" or a Windows variant like "WINDOWS\_SERVER\_2019\_FULL". ARM64 (cpu\_architecture) is Linux-only on Fargate. | `string` | `"LINUX"` | no |
 | private\_subnet\_ids | n/a | `list(string)` | n/a | yes |
 | project | n/a | `string` | n/a | yes |
 | public\_subnet\_ids | n/a | `list(string)` | n/a | yes |
