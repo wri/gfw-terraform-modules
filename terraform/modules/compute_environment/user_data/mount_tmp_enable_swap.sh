@@ -3,10 +3,11 @@ Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
 
 --==MYBOUNDARY==
 Content-Type: text/x-shellscript; charset="us-ascii"
+#!/bin/bash
 ########################################
 # NOTES
 # ECS optimized AMIs come with a second EBS volume used by Docker
-# For this script is meant to work with ECS optimized AMI
+# This script is meant to work with ECS optimized AMI
 # and instance types with at least 1 ephemeral storage devices ie r5d, c5d etc.
 # For instances with two or more ephemeral storage devices (r5d.4xlarge/
 # c5d.12xlarge and up, or any instance type with 2+ local NVMe devices) the
@@ -22,7 +23,6 @@ Content-Type: text/x-shellscript; charset="us-ascii"
 # on repost.aws).
 #########################################
 
-#!/bin/bash
 exec > >(tee /dev/console) 2>&1
 shopt -s nullglob
 
