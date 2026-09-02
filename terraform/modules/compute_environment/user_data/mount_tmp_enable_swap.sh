@@ -3,12 +3,12 @@ Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
 
 --==MYBOUNDARY==
 Content-Type: text/x-shellscript; charset="us-ascii"
+#!/bin/bash
 ########################################
 # NOTES
 # ECS optimized AMIs come with a second EBS volume used by Docker
-# For this script is meant to work with ECS optimized AMI
+# This script is meant to work with ECS optimized AMI
 # and instance types with at least 1 ephemeral storage devices ie r5d, c5d etc.
-
 # For instances with two or more ephemeral storage devices (r5d.4xlarge/
 # c5d.12xlarge and up, or any instance type with 2+ local NVMe devices) the
 # second device found is used as swap drive; any further devices beyond the
@@ -23,11 +23,10 @@ Content-Type: text/x-shellscript; charset="us-ascii"
 # on repost.aws).
 #########################################
 
-#!/bin/bash
-set -euo pipefail
+exec > >(tee /dev/console) 2>&1
 shopt -s nullglob
 
-yum install -y rsync
+echo "mount_tmp_enable_swap.sh starting at $(date -u +%FT%TZ)"
 
 #######################################
 # Find local instance-store NVMe devices (never EBS, including the root
@@ -44,10 +43,16 @@ for model_file in /sys/class/nvme/nvme*/model; do
     fi
   fi
 done
+echo "Found ${#local_nvme_devices[@]} local NVMe instance-store device(s): ${local_nvme_devices[*]:-none}"
 
 #######################################
-# Mount the first local device as ephemeral storage for /tmp
+# Critical path: format and mount the first local device as ephemeral
+# storage for /tmp, then signal READY. Failures here are fatal (set -e) --
+# if this doesn't succeed, processes waiting on READY should keep waiting
+# rather than be told a broken mount is good to use.
 #######################################
+
+set -euo pipefail
 
 if [ "${#local_nvme_devices[@]}" -ge 1 ]; then
   data_device="${local_nvme_devices[0]}"
@@ -55,14 +60,10 @@ if [ "${#local_nvme_devices[@]}" -ge 1 ]; then
   mkfs.ext4 "$data_device"
   mkdir -p /mnt/ext
   mount -t ext4 "$data_device" /mnt/ext
-
-  # make temp directory for containers usage
-  # should be used in the Batch job definition (MountPoints)
-  mkdir /mnt/ext/tmp
-  rsync -avPHSX /tmp/ /mnt/ext/tmp/
+  mkdir -p /mnt/ext/tmp
 
   # modify fstab to mount /tmp on the new storage.
-  sed -i '$ a /mnt/ext/tmp  /tmp  none  bind  0 0' /etc/fstab
+  echo '/mnt/ext/tmp  /tmp  none  bind  0 0' >> /etc/fstab
   mount -a
 
   # make /tmp usable by everyone
@@ -77,22 +78,36 @@ else
   chmod 777 /mnt/ext/tmp
 fi
 
+set +euo pipefail
+
+#######################################
+# Best-effort: preserve whatever was already in /tmp (should be near-empty
+# on a fresh instance) by copying it into the new mount before the bind
+# mount above shadows it. Not on the critical path -- a failure to install
+# or run rsync here is logged and skipped, not fatal.
+#######################################
+
+if command -v rsync > /dev/null 2>&1 || yum install -y rsync; then
+  rsync -avPHSX /tmp/ /mnt/ext/tmp/ || echo "WARNING: rsync of pre-existing /tmp contents failed; continuing anyway." >&2
+else
+  echo "WARNING: could not install rsync; skipping copy of pre-existing /tmp contents." >&2
+fi
+
 ########################################
-# Create swap space on the second local device, if one exists
+# Best-effort: create swap space on the second local device, if one exists.
+# Not on the critical path.
 ########################################
 
 if [ "${#local_nvme_devices[@]}" -ge 2 ]; then
   swap_device="${local_nvme_devices[1]}"
 
-  # Set up a Linux swap area on the device with the mkswap command.
-  mkswap "$swap_device"
-
-  # Enable the new swap space.
-  swapon "$swap_device"
-
-  # Edit your /etc/fstab file so that this swap space is automatically enabled at every system boot.
-  # (propbably not nessecessary)
-  sed -i "\$ a $swap_device  none  swap  sw  0 0" /etc/fstab
+  if mkswap "$swap_device" && swapon "$swap_device"; then
+    # Edit your /etc/fstab file so that this swap space is automatically enabled at every system boot.
+    # (propbably not nessecessary)
+    echo "$swap_device  none  swap  sw  0 0" >> /etc/fstab
+  else
+    echo "WARNING: failed to set up swap on $swap_device; continuing anyway." >&2
+  fi
 fi
 
 #########################################
@@ -101,5 +116,6 @@ fi
 
 # Create 0 byte file "READY" to allow processes to check if new volume is ready for use
 touch /mnt/ext/tmp/READY
+echo "mount_tmp_enable_swap.sh finished at $(date -u +%FT%TZ), READY touched."
 
 --==MYBOUNDARY==--
