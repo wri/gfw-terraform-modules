@@ -15,6 +15,19 @@
     },
     {
       "rulePriority": 2,
+      "description": "Keep the buildx registry cache (one image per architecture, currently arm64 + amd64 -- see terraform/scripts/buildx_push.sh)",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["buildcache-"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 4
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 3,
       "description": "Keep last 2 any images",
       "selection": {
         "tagStatus": "any",
