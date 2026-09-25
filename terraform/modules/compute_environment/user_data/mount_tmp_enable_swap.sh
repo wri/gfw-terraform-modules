@@ -62,7 +62,16 @@ if [ "${#local_nvme_devices[@]}" -ge 1 ]; then
   mount -t ext4 "$data_device" /mnt/ext
   mkdir -p /mnt/ext/tmp
 
-  # modify fstab to mount /tmp on the new storage.
+  # Preserve anything already written to /tmp before the bind mount hides it.
+  # This should normally be nearly empty on a fresh Batch instance, so failure
+  # is non-fatal.
+  if command -v rsync > /dev/null 2>&1 || yum install -y rsync; then
+    rsync -avPHSX /tmp/ /mnt/ext/tmp/ || echo "WARNING: rsync of pre-existing /tmp contents failed; continuing anyway." >&2
+  else
+    echo "WARNING: could not install rsync; skipping copy of pre-existing /tmp contents." >&2
+  fi
+
+  # Bind mount /tmp only after its pre-existing contents have been copied.
   echo '/mnt/ext/tmp  /tmp  none  bind  0 0' >> /etc/fstab
   mount -a
 
@@ -79,19 +88,6 @@ else
 fi
 
 set +euo pipefail
-
-#######################################
-# Best-effort: preserve whatever was already in /tmp (should be near-empty
-# on a fresh instance) by copying it into the new mount before the bind
-# mount above shadows it. Not on the critical path -- a failure to install
-# or run rsync here is logged and skipped, not fatal.
-#######################################
-
-if command -v rsync > /dev/null 2>&1 || yum install -y rsync; then
-  rsync -avPHSX /tmp/ /mnt/ext/tmp/ || echo "WARNING: rsync of pre-existing /tmp contents failed; continuing anyway." >&2
-else
-  echo "WARNING: could not install rsync; skipping copy of pre-existing /tmp contents." >&2
-fi
 
 ########################################
 # Best-effort: create swap space on the second local device, if one exists.
