@@ -26,17 +26,6 @@ resource "aws_iam_role_policy_attachment" "custom_ecs_task_role_policies" {
   policy_arn = var.task_role_policies[count.index]
 }
 
-resource "aws_iam_role" "autoscaling" {
-  name               = substr("${var.project}-appautoscaling-role${var.name_suffix}", 0, 64)
-  assume_role_policy = data.template_file.autoscaling_role.rendered
-}
-
-resource "aws_iam_role_policy" "autoscaling" {
-  name   = substr("${var.project}-appautoscaling-policy${var.name_suffix}", 0, 64)
-  policy = data.local_file.appautoscaling_role_policy.content
-  role   = aws_iam_role.autoscaling.id
-}
-
 resource "aws_iam_policy" "ecs_update_service_policy" {
   name   = substr("${var.project}-ecs_update_service_policy${var.name_suffix}", 0, 64)
   policy = data.template_file.ecs_update_service_policy.rendered

@@ -24,18 +24,6 @@ data "aws_iam_policy_document" "ecs_assume_role" {
 }
 
 
-data "template_file" "autoscaling_role" {
-  template = file("${path.module}/templates/service_role.json.tmpl")
-  vars = {
-    service = "ecs.application-autoscaling.amazonaws.com"
-  }
-}
-
-data "local_file" "appautoscaling_role_policy" {
-
-  filename = "${path.module}/templates/appautoscaling_role_policy.json"
-}
-
 data "template_file" "ecs_update_service_policy" {
   template = file("${path.module}/templates/iam_policy_update_ecs_service.json.tmpl")
   vars = {

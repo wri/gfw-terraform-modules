@@ -65,7 +65,6 @@ resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = var.auto_scaling_max_capacity
   min_capacity       = var.auto_scaling_min_capacity
   resource_id        = "service/${length(aws_ecs_cluster.default) > 0 ? aws_ecs_cluster.default[0].name : var.cluster_name}/${aws_ecs_service.default.name}"
-  role_arn           = aws_iam_role.autoscaling.arn
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 
